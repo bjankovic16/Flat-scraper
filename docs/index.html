@@ -157,7 +157,7 @@
 <div class="status" id="status"></div>
 
 <script>
-const VERSION = "2026-09-03g";  // vidi se u Podešavanjima; potvrda da nije keširana stara verzija
+const VERSION = "2026-09-03h";  // vidi se u Podešavanjima; potvrda da nije keširana stara verzija
 const API = "https://api.github.com";
 const LS = { token: "sw_token", repo: "sw_repo" };
 
@@ -286,8 +286,9 @@ function card(url, e) {
   const isBlocked = cfg.blocked.includes(url);
   const area = e.area_m2 ? `${Math.round(e.area_m2)} m²` : "m² N/A";
   const rooms = e.rooms ? `${e.rooms} soba` : "";
-  const floor = e.floor === null || e.floor === undefined ? ""
+  let floor = e.floor === null || e.floor === undefined ? ""
     : e.floor === 0 ? "prizemlje" : e.floor < 0 ? "suteren" : `${e.floor}. sprat`;
+  if (floor && e.total_floors) floor += ` od ${e.total_floors}`;
   const div = document.createElement("div");
   div.className = "card";
   div.innerHTML = `
