@@ -11,12 +11,7 @@ Kriterijume menjaš u `scraper.py`, na vrhu fajla (sekcija `CONFIG`).
 
 ## Podešavanje (jednom, traje ~10 minuta)
 
-### 1. Napravi GitHub nalog (ako ga nemaš) i novi repozitorijum
-- Idi na github.com → **New repository** → nazovi ga npr. `stan-watcher` → **Private** → Create.
-- U taj repo otpakuj/uploaduj sve fajlove iz ovog paketa (zadrži strukturu foldera,
-  uključujući `.github/workflows/daily-check.yml`).
-
-### 2. Napravi "app password" za Gmail (da skripta može da šalje mejlove u tvoje ime)
+### 1. Napravi "app password" za Gmail (da skripta može da šalje mejlove u tvoje ime)
 Google ne dozvoljava prijavu običnom lozinkom iz skripti, pa treba posebna:
 1. Uključi dvofaktorsku autentifikaciju na svom Google nalogu (ako već nije):
    https://myaccount.google.com/security
@@ -27,17 +22,17 @@ Google ne dozvoljava prijavu običnom lozinkom iz skripti, pa treba posebna:
 *(Ako ne koristiš Gmail, može i drugi provajder — samo treba da promeniš
 `smtp.gmail.com` u `scraper.py` na SMTP server tvog provajdera.)*
 
-### 3. Dodaj "Secrets" u GitHub repo (da lozinka ne bude vidljiva u kodu)
+### 2. Dodaj "Secrets" u GitHub repo (da lozinka ne bude vidljiva u kodu)
 U repozitorijumu: **Settings → Secrets and variables → Actions → New repository secret**
 
 Dodaj tri secret-a:
 | Ime | Vrednost |
 |---|---|
 | `EMAIL_USER` | tvoja Gmail adresa, npr. `pera@gmail.com` |
-| `EMAIL_PASS` | 16-cifreni app password iz koraka 2 |
+| `EMAIL_PASS` | 16-cifreni app password iz koraka 1 |
 | `EMAIL_TO` | mejl na koji želiš da stižu obaveštenja (može biti isti kao EMAIL_USER) |
 
-### 4. Uključi Actions i testiraj
+### 3. Uključi Actions i testiraj
 1. U repozitorijumu idi na tab **Actions**. Ako pita da potvrdiš workflow, klikni potvrdi.
 2. Klikni na "Dnevna provera stanova" → **Run workflow** → **Run workflow**
    (ovo pokreće proveru odmah, ne moraš da čekaš do sutra).
@@ -58,12 +53,49 @@ MIN_ROOMS = 2.0
 Promeni brojeve, sačuvaj, i pošalji (commit + push) promenu na GitHub — sledeći
 put kad se skripta pokrene koristiće nove vrednosti.
 
+## Veb aplikacija (favoriti, blokirani oglasi, ključne reči)
+
+`docs/index.html` je cela aplikacija u jednom fajlu — nema servera ni baze.
+Čita katalog oglasa iz `data/listings.json` i upisuje tvoja podešavanja u
+`config.json`, direktno preko GitHub API-ja.
+
+**Kako je pokrenuti:** otvori `docs/index.html` u pregledaču (može i sa diska),
+ili je okači na bilo koji besplatan hosting (Cloudflare Pages, Netlify, Vercel,
+ili GitHub Pages ako repo prebaciš na public).
+
+**Token:** treba ti fine-grained token sa pristupom samo ovom repozitorijumu i
+dozvolom **Contents: Read and write**
+(https://github.com/settings/personal-access-tokens/new). Uneseš ga jednom u
+tabu Podešavanja; čuva se samo u tvom pregledaču (localStorage) i nikad ne
+završava u repozitorijumu.
+
+Šta možeš iz aplikacije:
+
+| Tab | Šta radi |
+|---|---|
+| Oglasi | Svi oglasi iz kataloga, pretraga po naslovu i opisu, ★ favorit / sakrij |
+| Favoriti | Oglasi koje pratiš — javljamo promenu cene i kad nestanu sa sajta |
+| Blokirani | Oglasi koje više ne želiš u mejlu (možeš ih vratiti nazad) |
+| Reči | Ključne reči — oglas ispada ako se reč nađe u naslovu **ili** opisu |
+
+Ključne reči ne razlikuju velika/mala slova ni kvačice, i traže se kao deo reči:
+`prizemlj` hvata i „prizemlje" i „prizemlju". Koristi koren reči, ne ceo oblik.
+
+## Pokretanje sa telefona
+Instaliraj GitHub aplikaciju → otvori repo → **Actions** → „Dnevna provera
+stanova" → **Run workflow**. Provera kreće odmah, ne moraš da čekaš 7h ujutru.
+
 ## Napomene
 - Prva provera će verovatno poslati priličan broj oglasa odjednom (sve što
   trenutno postoji i zadovoljava kriterijume). Od drugog dana dalje dobijaš
   samo NOVE oglase.
-- Skripta čuva listu već viđenih oglasa u `seen_listings.json` i sama je ažurira
-  nazad u repo posle svakog pokretanja.
+- Skripta čuva katalog svih viđenih oglasa u `data/listings.json` i sama ga
+  ažurira nazad u repo posle svakog pokretanja. `seen_listings.json` je stari
+  format — prenosi se u katalog automatski, pri prvom pokretanju.
+- Naslov i opis se skidaju sa stranice oglasa, ali samo jednom po oglasu —
+  posle toga se čitaju iz kataloga, pa provere ostaju brze.
+- Favorit se prijavljuje kao nestao tek kad ga nema u tri provere zaredom;
+  jedno preskakanje obično znači samo da je ispao van prve tri strane.
 - Sajtovi s vremena na vreme menjaju izgled stranice, što može da pokvari
   parsiranje — ako ti mejlovi prestanu da stižu ili izgledaju čudno, javi mi
   pa ću prilagoditi kod.
