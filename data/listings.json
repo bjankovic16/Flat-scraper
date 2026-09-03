@@ -917,7 +917,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-65-novi-beograd-beograd/trosoban-stan/69a2c3cfb6b06a65e50b25d7": {
     "area_m2": 84.0,
-    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 9 Đorđa Stanojevića Blok 65, Novi Beograd, Beograd 319.200 € 3.800 €/m² 84m² 3 sobe 2. sprat Prazno Garaža Agencija Ažurirano 01.09.2026.",
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 9 Đorđa Stanojevića Blok 65, Novi Beograd, Beograd 305.000 € 3.631 €/m² 84m² 3 sobe 2. sprat Prazno Garaža Agencija Ažurirano 01.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, Blok 65, 84 m2, na 2. spratu, ima lift. Stanje - Novo, Centralno, ima terasu. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -925,7 +925,7 @@
     "location": "Novi Beograd",
     "missing_runs": 0,
     "notified": true,
-    "price_eur": 319200,
+    "price_eur": 305000,
     "rooms": 3.0,
     "source": "4zida.rs",
     "title": "Trosoban stan na prodaju, Đorđa Stanojevića, 319.200€, 84m²",
