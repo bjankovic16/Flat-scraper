@@ -295,13 +295,16 @@ function renderList(target, urls, emptyMsg) {
 
 function render() {
   const all = Object.keys(catalog);
+  const real = all.filter((u) => catalog[u].price_eur).length;
   $("summary").textContent =
-    `${all.length} oglasa · ${cfg.favorites.length} favorita · ` +
+    `${real} oglasa · ${cfg.favorites.length} favorita · ` +
     `${cfg.blocked.length} blokiranih · ${cfg.exclude_keywords.length} reči`;
 
   const q = $("search").value.trim().toLowerCase();
   const visible = all.filter((u) => {
     if (cfg.blocked.includes(u)) return false;
+    // Oglasi preneti iz starog formata nemaju nijedan podatak osim URL-a.
+    if (!catalog[u].price_eur) return false;
     if (!q) return true;
     const e = catalog[u];
     return `${e.title || ""} ${e.description || ""}`.toLowerCase().includes(q);

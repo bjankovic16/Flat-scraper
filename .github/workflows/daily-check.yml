@@ -43,6 +43,22 @@ jobs:
           git add data/listings.json
           git diff --staged --quiet && exit 0
           git commit -m "Ažuriranje kataloga oglasa [skip ci]"
-          # Veb aplikacija u međuvremenu možda menjala config.json — ne gazi je.
-          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+          # Veb aplikacija upisuje config.json u istu granu dok mi radimo, pa
+          # push ume da bude odbijen. Rebase-ujemo i probamo ponovo; kod sudara
+          # na katalogu merodavan je onaj koji je skripta upravo napravila
+          # (-X theirs se u rebase-u odnosi na commit koji se primenjuje).
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "Push uspeo iz pokušaja ${attempt}."
+              exit 0
+            fi
+            echo "Push odbijen — rebase pa ponovo (pokušaj ${attempt})."
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase -X theirs "origin/${GITHUB_REF_NAME}" || {
+              git rebase --abort
+              sleep 5
+            }
+          done
+          echo "Katalog nije sačuvan posle 3 pokušaja."
+          exit 1
