@@ -1,0 +1,7 @@
+# Cloudflare Workers — servira veb aplikaciju iz docs/ kao statički sajt.
+# Nema koda koji se izvršava na serveru; sve radi u pregledaču.
+name = "flat-scraper"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "./docs"
