@@ -6,6 +6,7 @@ Prati oglase za prodaju stanova na **Halo Oglasi** i **4zida.rs** za Novi Beogra
 - cena do 350.000 €
 - kvadratura 70m² ili više
 - 2 sobe ili više
+- od 2. do 6. sprata (prizemlje i suteren ispadaju)
 
 Kriterijume menjaš u `scraper.py`, na vrhu fajla (sekcija `CONFIG`).
 
@@ -48,6 +49,8 @@ Otvori `scraper.py`, na vrhu:
 MAX_PRICE_EUR = 350_000
 MIN_AREA_M2 = 70
 MIN_ROOMS = 2.0
+MIN_FLOOR = 2
+MAX_FLOOR = 6
 ```
 
 Promeni brojeve, sačuvaj, i pošalji (commit + push) promenu na GitHub — sledeći

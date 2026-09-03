@@ -36,6 +36,8 @@ except ImportError:  # skripta radi i bez njega, samo slabije protiv blokada
 MAX_PRICE_EUR = 350_000
 MIN_AREA_M2 = 70
 MIN_ROOMS = 2.0  # 2.0 = dvosoban i veći (2.5, 3.0, 3.5...)
+MIN_FLOOR = 2  # prizemlje je 0, suteren -1
+MAX_FLOOR = 6
 
 # Kategorije (broj soba) koje pratimo na Halo Oglasi za Novi Beograd.
 HALOOGLASI_CATEGORIES = [
@@ -89,6 +91,7 @@ class Listing:
     area_m2: Optional[float]
     rooms: Optional[float]
     location: str
+    floor: Optional[int] = None
     description: str = ""
 
     def key(self) -> str:
@@ -137,6 +140,50 @@ def parse_rooms(text: str) -> Optional[float]:
         return float(num)
     except ValueError:
         return None
+
+
+# Halo Oglasi piše spratnost skraćenicama, 4zida rečima.
+FLOOR_TOKENS = {"PR": 0, "VPR": 0, "SUT": -1, "PSUT": -1}
+ROMAN_DIGITS = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100}
+
+
+def roman_to_int(text: str) -> Optional[int]:
+    """'VI' -> 6, 'XXI' -> 21"""
+    total = highest = 0
+    for char in reversed(text.upper()):
+        value = ROMAN_DIGITS.get(char)
+        if value is None:
+            return None
+        total = total - value if value < highest else total + value
+        highest = max(highest, value)
+    return total or None
+
+
+def parse_floor(text: str) -> Optional[int]:
+    """'VI/6 Spratnost' -> 6 | '3/11 spratova' -> 3 | 'prizemlje' -> 0 | 'suteren' -> -1
+
+    Potkrovlje i sve što ne prepoznamo vraća None — takav oglas prolazi filter,
+    kao i kod kvadrature i soba, da ne bismo tiho bacali oglase.
+    """
+    clean = text.replace("\xa0", " ")
+
+    m = re.search(r"(\d+)\s*/\s*\d+\s*spratova", clean, re.IGNORECASE)
+    if m:
+        return int(m.group(1))
+
+    m = re.search(r"\b(VPR|PSUT|PR|SUT|PTK)\s*(?:/\s*\d+)?\s*Spratnost", clean)
+    if m:
+        return FLOOR_TOKENS.get(m.group(1))
+
+    m = re.search(r"\b([IVXLC]+)\s*(?:/\s*\d+)?\s*Spratnost", clean)
+    if m:
+        return roman_to_int(m.group(1))
+
+    if re.search(r"prizemlj", clean, re.IGNORECASE):
+        return 0
+    if re.search(r"suteren", clean, re.IGNORECASE):
+        return -1
+    return None
 
 
 def normalize(text: str) -> str:
@@ -295,6 +342,7 @@ def scrape_halooglasi_category(category: str) -> list[Listing]:
             price = parse_price(text)
             area = parse_area(text)
             rooms = parse_rooms(text)
+            floor = parse_floor(text)
             title = card_title(card, href)
 
             results.append(Listing(
@@ -304,6 +352,7 @@ def scrape_halooglasi_category(category: str) -> list[Listing]:
                 price_eur=price,
                 area_m2=area,
                 rooms=rooms,
+                floor=floor,
                 location="Novi Beograd",
             ))
             found_on_page += 1
@@ -353,6 +402,7 @@ def scrape_4zida_category(category: str) -> list[Listing]:
             price = parse_price(text)
             area = parse_area(text)
             rooms = parse_rooms(text)
+            floor = parse_floor(text)
             title = card_title(card, href)
 
             results.append(Listing(
@@ -362,6 +412,7 @@ def scrape_4zida_category(category: str) -> list[Listing]:
                 price_eur=price,
                 area_m2=area,
                 rooms=rooms,
+                floor=floor,
                 location="Novi Beograd",
             ))
             found_on_page += 1
@@ -453,6 +504,8 @@ def passes_filters(listing: Listing) -> bool:
         return False
     if listing.rooms is not None and listing.rooms < MIN_ROOMS:
         return False
+    if listing.floor is not None and not (MIN_FLOOR <= listing.floor <= MAX_FLOOR):
+        return False
     return True
 
 
@@ -460,11 +513,22 @@ def format_price(value: Optional[int]) -> str:
     return f"{value:,} €".replace(",", ".") if value else "cena N/A"
 
 
+def format_floor(floor: Optional[int]) -> str:
+    if floor is None:
+        return "sprat N/A"
+    if floor == 0:
+        return "prizemlje"
+    if floor < 0:
+        return "suteren"
+    return f"{floor}. sprat"
+
+
 def format_listing(listing: Listing) -> list[str]:
     area = f"{listing.area_m2:.0f} m²" if listing.area_m2 else "m² N/A"
     rooms = f"{listing.rooms:g} soba" if listing.rooms else "sobe N/A"
     lines = [f"\n[{listing.source}] {listing.title}",
-             f"  {format_price(listing.price_eur)} | {area} | {rooms}"]
+             f"  {format_price(listing.price_eur)} | {area} | {rooms} | "
+             f"{format_floor(listing.floor)}"]
     if listing.description:
         lines.append(f"  {listing.description[:200]}")
     lines.append(f"  {listing.url}")
@@ -476,7 +540,7 @@ def build_email_body(new_listings: list[Listing], favorite_events: list[str],
     max_price = f"{MAX_PRICE_EUR:,}".replace(",", ".")
     lines = [
         f"Novi Beograd — do {max_price} €, {MIN_AREA_M2}m2+, "
-        f"{MIN_ROOMS:g} sobe ili više",
+        f"{MIN_ROOMS:g} sobe ili više, {MIN_FLOOR}-{MAX_FLOOR}. sprat",
     ]
     if keywords:
         lines.append(f"Isključene ključne reči: {', '.join(keywords)}")
@@ -653,6 +717,7 @@ def main():
             "price_eur": listing.price_eur,
             "area_m2": listing.area_m2,
             "rooms": listing.rooms,
+            "floor": listing.floor,
             "location": listing.location,
             "last_seen": today,
         })
