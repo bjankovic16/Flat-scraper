@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Stan Watcher — Novi Beograd</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #16181d;
+    --muted: #666e7a;
+    --line: #e2e5ea;
+    --accent: #2f6fed;
+    --fav: #e8a020;
+    --danger: #c8442e;
+    --ok: #1f8a4c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a; --card: #1d2026; --ink: #e9ecf1; --muted: #98a1ae;
+      --line: #2c313a; --accent: #6c9bff; --fav: #f0b34a; --danger: #ff7a63;
+      --ok: #57c98a;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  header {
+    position: sticky; top: 0; z-index: 10; background: var(--card);
+    border-bottom: 1px solid var(--line); padding: 10px 14px;
+    padding-top: calc(10px + env(safe-area-inset-top));
+  }
+  h1 { margin: 0; font-size: 17px; }
+  .sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  main { padding: 14px; max-width: 780px; margin: 0 auto; }
+  .tabs { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; }
+  .tabs button {
+    flex: 1 0 auto; padding: 8px 12px; border-radius: 999px; font-size: 13px;
+    border: 1px solid var(--line); background: transparent; color: var(--muted);
+  }
+  .tabs button[aria-selected="true"] {
+    background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px; margin-bottom: 10px;
+  }
+  .card h3 { margin: 0 0 4px; font-size: 15px; line-height: 1.3; }
+  .card h3 a { color: inherit; text-decoration: none; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .price { font-weight: 700; font-size: 16px; }
+  .desc {
+    color: var(--muted); font-size: 13px; margin-top: 6px;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  button, input, select {
+    font: inherit; border-radius: 9px; border: 1px solid var(--line);
+    padding: 9px 12px; background: var(--card); color: var(--ink);
+  }
+  button { cursor: pointer; }
+  .btn-fav[aria-pressed="true"] { background: var(--fav); border-color: var(--fav); color: #1b1400; font-weight: 600; }
+  .btn-block[aria-pressed="true"] { background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 600; }
+  .primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  input[type="text"], input[type="password"], input[type="search"] { width: 100%; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+    border: 1px solid var(--line); border-radius: 999px; font-size: 13px;
+  }
+  .chip button { border: 0; background: none; padding: 0 2px; color: var(--danger); font-size: 15px; }
+  .empty { color: var(--muted); text-align: center; padding: 30px 10px; }
+  .status {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: 16px;
+    background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 999px;
+    font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 50;
+  }
+  .status.show { opacity: 1; }
+  .note { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Stan Watcher — Novi Beograd</h1>
+  <div class="sub" id="summary">Učitavanje…</div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="listings" aria-selected="true">Oglasi</button>
+    <button data-tab="favorites" aria-selected="false">Favoriti</button>
+    <button data-tab="blocked" aria-selected="false">Blokirani</button>
+    <button data-tab="keywords" aria-selected="false">Reči</button>
+    <button data-tab="settings" aria-selected="false">Podešavanja</button>
+  </nav>
+</header>
+
+<main>
+  <section id="tab-listings">
+    <input type="search" id="search" placeholder="Pretraga po naslovu ili opisu…">
+    <div id="list"></div>
+  </section>
+
+  <section id="tab-favorites" class="hidden"><div id="favList"></div></section>
+
+  <section id="tab-blocked" class="hidden"><div id="blockList"></div></section>
+
+  <section id="tab-keywords" class="hidden">
+    <div class="card">
+      <h3>Isključi oglase koji sadrže reč</h3>
+      <div class="meta">Traži se i u naslovu i u opisu oglasa. Ne razlikuje velika/mala
+        slova ni kvačice. Koristi koren reči — <b>prizemlj</b> hvata i „prizemlje“
+        i „prizemlju“.</div>
+      <div class="row">
+        <input type="text" id="kwInput" placeholder="npr. prizemlj" style="flex:1">
+        <button class="primary" id="kwAdd">Dodaj</button>
+      </div>
+      <div class="chips" id="kwChips"></div>
+    </div>
+  </section>
+
+  <section id="tab-settings" class="hidden">
+    <div class="card">
+      <h3>GitHub pristup</h3>
+      <div class="meta">Token se čuva samo u ovom pregledaču (localStorage) i šalje
+        se isključivo na api.github.com. Nikad se ne upisuje u repozitorijum.</div>
+      <label for="repo">Repozitorijum</label>
+      <input type="text" id="repo" placeholder="bjankovic16/Flat-scraper">
+      <label for="token">Fine-grained token (Contents: Read and write)</label>
+      <input type="password" id="token" placeholder="github_pat_…">
+      <div class="row">
+        <button class="primary" id="save">Sačuvaj i učitaj</button>
+        <button id="forget">Obriši token</button>
+      </div>
+      <div class="note" id="tokenNote"></div>
+    </div>
+  </section>
+</main>
+
+<div class="status" id="status"></div>
+
+<script>
+const API = "https://api.github.com";
+const LS = { token: "sw_token", repo: "sw_repo" };
+
+let cfg = { exclude_keywords: [], blocked: [], favorites: [] };
+let cfgSha = null;
+let catalog = {};
+let tab = "listings";
+
+const $ = (id) => document.getElementById(id);
+const token = () => localStorage.getItem(LS.token) || "";
+const repo = () => localStorage.getItem(LS.repo) || "bjankovic16/Flat-scraper";
+
+function toast(msg, ms = 2200) {
+  const el = $("status");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove("show"), ms);
+}
+
+function money(v) {
+  return v ? new Intl.NumberFormat("sr-RS").format(v) + " €" : "cena N/A";
+}
+
+async function gh(path, options = {}) {
+  const res = await fetch(`${API}/repos/${repo()}/contents/${path}`, {
+    ...options,
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${token()}`,
+      "X-GitHub-Api-Version": "2022-11-28",
+      ...(options.headers || {}),
+    },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`${res.status} ${res.statusText} — ${body.slice(0, 200)}`);
+  }
+  return res.json();
+}
+
+// GitHub vraća base64; atob ne razume UTF-8 pa ide preko TextDecoder-a.
+function decode(b64) {
+  const bin = atob(b64.replace(/\n/g, ""));
+  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  return new TextDecoder("utf-8").decode(bytes);
+}
+function encode(text) {
+  const bytes = new TextEncoder().encode(text);
+  let bin = "";
+  bytes.forEach((b) => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+
+async function loadAll() {
+  if (!token()) { switchTab("settings"); $("summary").textContent = "Unesi token u Podešavanjima"; return; }
+  try {
+    $("summary").textContent = "Učitavanje…";
+    const cfgRes = await gh("config.json");
+    cfgSha = cfgRes.sha;
+    cfg = { exclude_keywords: [], blocked: [], favorites: [], ...JSON.parse(decode(cfgRes.content)) };
+    try {
+      const catRes = await gh("data/listings.json");
+      catalog = JSON.parse(decode(catRes.content));
+    } catch {
+      catalog = {};  // skripta još nije napravila katalog
+    }
+    render();
+  } catch (e) {
+    $("summary").textContent = "Greška: " + e.message;
+    toast("Ne mogu da učitam — proveri token", 4000);
+  }
+}
+
+async function saveConfig() {
+  try {
+    const res = await gh("config.json", {
+      method: "PUT",
+      body: JSON.stringify({
+        message: "Izmena podešavanja iz veb aplikacije",
+        content: encode(JSON.stringify(cfg, null, 2) + "\n"),
+        sha: cfgSha,
+      }),
+    });
+    cfgSha = res.content.sha;
+    toast("Sačuvano");
+  } catch (e) {
+    toast("Nije sačuvano: " + e.message, 4000);
+  }
+}
+
+function toggle(list, url) {
+  const i = cfg[list].indexOf(url);
+  if (i === -1) cfg[list].push(url); else cfg[list].splice(i, 1);
+  // Oglas ne može biti i favorit i blokiran.
+  const other = list === "favorites" ? "blocked" : "favorites";
+  const j = cfg[other].indexOf(url);
+  if (i === -1 && j !== -1) cfg[other].splice(j, 1);
+  render();
+  saveConfig();
+}
+
+function card(url, e) {
+  const isFav = cfg.favorites.includes(url);
+  const isBlocked = cfg.blocked.includes(url);
+  const area = e.area_m2 ? `${Math.round(e.area_m2)} m²` : "m² N/A";
+  const rooms = e.rooms ? `${e.rooms} soba` : "";
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerHTML = `
+    <h3><a href="${url}" target="_blank" rel="noopener">${e.title || url}</a></h3>
+    <div class="meta"><span class="price">${money(e.price_eur)}</span> · ${area} ${rooms ? "· " + rooms : ""}</div>
+    <div class="meta">${e.source || ""}${e.first_seen ? " · viđen " + e.first_seen : ""}</div>
+    ${e.description ? `<div class="desc">${e.description}</div>` : ""}
+    <div class="row">
+      <button class="btn-fav" aria-pressed="${isFav}">${isFav ? "★ Favorit" : "☆ Favorit"}</button>
+      <button class="btn-block" aria-pressed="${isBlocked}">${isBlocked ? "🚫 Blokiran" : "Sakrij"}</button>
+    </div>`;
+  div.querySelector(".btn-fav").onclick = () => toggle("favorites", url);
+  div.querySelector(".btn-block").onclick = () => toggle("blocked", url);
+  return div;
+}
+
+function renderList(target, urls, emptyMsg) {
+  const box = $(target);
+  box.innerHTML = "";
+  if (!urls.length) {
+    box.innerHTML = `<div class="empty">${emptyMsg}</div>`;
+    return;
+  }
+  urls.sort((a, b) => (catalog[a]?.price_eur || 0) - (catalog[b]?.price_eur || 0));
+  urls.forEach((u) => box.appendChild(card(u, catalog[u] || {})));
+}
+
+function render() {
+  const all = Object.keys(catalog);
+  $("summary").textContent =
+    `${all.length} oglasa · ${cfg.favorites.length} favorita · ` +
+    `${cfg.blocked.length} blokiranih · ${cfg.exclude_keywords.length} reči`;
+
+  const q = $("search").value.trim().toLowerCase();
+  const visible = all.filter((u) => {
+    if (cfg.blocked.includes(u)) return false;
+    if (!q) return true;
+    const e = catalog[u];
+    return `${e.title || ""} ${e.description || ""}`.toLowerCase().includes(q);
+  });
+  renderList("list", visible, "Nema oglasa — pokreni workflow da se katalog napuni.");
+  renderList("favList", cfg.favorites.filter((u) => catalog[u]), "Još nema favorita.");
+  renderList("blockList", cfg.blocked.filter((u) => catalog[u]), "Nema blokiranih oglasa.");
+
+  const chips = $("kwChips");
+  chips.innerHTML = "";
+  cfg.exclude_keywords.forEach((w, i) => {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.innerHTML = `${w} <button aria-label="Ukloni">×</button>`;
+    chip.querySelector("button").onclick = () => {
+      cfg.exclude_keywords.splice(i, 1); render(); saveConfig();
+    };
+    chips.appendChild(chip);
+  });
+}
+
+function switchTab(name) {
+  tab = name;
+  ["listings", "favorites", "blocked", "keywords", "settings"].forEach((t) => {
+    $("tab-" + t).classList.toggle("hidden", t !== name);
+  });
+  [...$("tabs").children].forEach((b) => {
+    b.setAttribute("aria-selected", String(b.dataset.tab === name));
+  });
+}
+
+$("tabs").onclick = (e) => { if (e.target.dataset.tab) switchTab(e.target.dataset.tab); };
+$("search").oninput = render;
+$("kwAdd").onclick = () => {
+  const v = $("kwInput").value.trim();
+  if (!v || cfg.exclude_keywords.includes(v)) return;
+  cfg.exclude_keywords.push(v);
+  $("kwInput").value = "";
+  render();
+  saveConfig();
+};
+$("kwInput").onkeydown = (e) => { if (e.key === "Enter") $("kwAdd").click(); };
+$("save").onclick = () => {
+  localStorage.setItem(LS.token, $("token").value.trim());
+  localStorage.setItem(LS.repo, $("repo").value.trim() || "bjankovic16/Flat-scraper");
+  switchTab("listings");
+  loadAll();
+};
+$("forget").onclick = () => {
+  localStorage.removeItem(LS.token);
+  $("token").value = "";
+  toast("Token obrisan");
+};
+
+$("repo").value = repo();
+$("tokenNote").textContent = token()
+  ? "Token je sačuvan u ovom pregledaču."
+  : "Token još nije unet.";
+loadAll();
+</script>
+</body>
+</html>

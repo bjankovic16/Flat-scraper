@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: stan-watcher  # dva pokretanja odjednom bi se tukla oko commit-a
+  cancel-in-progress: false
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -32,10 +36,13 @@ jobs:
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: python scraper.py
 
-      - name: Sačuvaj listu viđenih oglasa nazad u repo
+      - name: Sačuvaj katalog oglasa nazad u repo
         run: |
           git config user.name "stan-watcher-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add seen_listings.json
-          git diff --staged --quiet || git commit -m "Ažuriranje liste viđenih oglasa [skip ci]"
-          git push
+          git add data/listings.json
+          git diff --staged --quiet && exit 0
+          git commit -m "Ažuriranje kataloga oglasa [skip ci]"
+          # Veb aplikacija u međuvremenu možda menjala config.json — ne gazi je.
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

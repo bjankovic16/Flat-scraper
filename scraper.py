@@ -3,7 +3,9 @@
 Stan Watcher — prati oglase za prodaju stanova na Halo Oglasi i 4zida.rs
 i šalje dnevni mejl sa novim oglasima koji zadovoljavaju kriterijume.
 
-Kriterijumi se podešavaju u CONFIG ispod.
+Numerički kriterijumi (cena/kvadratura/sobe) se podešavaju u CONFIG ispod.
+Ključne reči, blokirani oglasi i favoriti se podešavaju iz veb aplikacije
+(docs/index.html), koja ih upisuje u config.json.
 """
 
 import json
@@ -11,7 +13,9 @@ import os
 import re
 import smtplib
 import time
-from dataclasses import dataclass, asdict
+import unicodedata
+from dataclasses import dataclass
+from datetime import date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -21,7 +25,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # ----------------------------------------------------------------------------
-# CONFIG — ovde menjaš kriterijume pretrage
+# CONFIG — ovde menjaš numeričke kriterijume pretrage
 # ----------------------------------------------------------------------------
 
 MAX_PRICE_EUR = 350_000
@@ -43,7 +47,12 @@ ZIDA_CATEGORIES = [
 ZIDA_BASE = "https://www.4zida.rs/prodaja-stanova/novi-beograd-beograd"
 
 MAX_PAGES_PER_CATEGORY = 3  # koliko stranica po kategoriji da proveri
-STATE_FILE = Path(__file__).parent / "seen_listings.json"
+
+ROOT = Path(__file__).parent
+CONFIG_FILE = ROOT / "config.json"          # piše ga veb aplikacija
+CATALOG_FILE = ROOT / "data" / "listings.json"  # piše ga ova skripta, čita veb aplikacija
+LEGACY_SEEN_FILE = ROOT / "seen_listings.json"  # format pre uvođenja kataloga
+
 REQUEST_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -52,6 +61,8 @@ REQUEST_HEADERS = {
 }
 REQUEST_DELAY_SECONDS = 1.5  # pristojna pauza između zahteva
 MAX_CARD_TEXT_CHARS = 1500  # veći blok teksta od ovoga nije jedan oglas, nego lista
+MAX_DETAIL_FETCHES = 150  # zaštita da prvo pokretanje ne traje unedogled
+MISSING_RUNS_BEFORE_ALERT = 3  # favorit se prijavljuje kao nestao tek posle N provera
 
 
 @dataclass
@@ -63,6 +74,7 @@ class Listing:
     area_m2: Optional[float]
     rooms: Optional[float]
     location: str
+    description: str = ""
 
     def key(self) -> str:
         return self.url
@@ -110,6 +122,13 @@ def parse_rooms(text: str) -> Optional[float]:
         return float(num)
     except ValueError:
         return None
+
+
+def normalize(text: str) -> str:
+    """Za poređenje ključnih reči: mala slova, bez kvačica ('Prizemlje' -> 'prizemlje')."""
+    text = (text or "").lower().replace("đ", "dj")
+    decomposed = unicodedata.normalize("NFKD", text)
+    return "".join(c for c in decomposed if not unicodedata.combining(c))
 
 
 def fetch(url: str) -> Optional[BeautifulSoup]:
@@ -161,6 +180,31 @@ def card_title(card, url: str) -> str:
         if text:
             return text
     return title_from_url(url)
+
+
+def fetch_detail(url: str) -> tuple[Optional[str], Optional[str]]:
+    """Pravi naslov i opis oglasa sa same stranice oglasa (og: meta tagovi)."""
+    soup = fetch(url)
+    time.sleep(REQUEST_DELAY_SECONDS)
+    if soup is None:
+        return None, None
+
+    title = None
+    og_title = soup.select_one('meta[property="og:title"]')
+    if og_title and og_title.get("content"):
+        title = og_title["content"].strip()
+    if not title:
+        h1 = soup.find("h1")
+        if h1:
+            title = h1.get_text(" ", strip=True)
+
+    description = None
+    meta_desc = soup.select_one(
+        'meta[name="description"], meta[property="og:description"]')
+    if meta_desc and meta_desc.get("content"):
+        description = meta_desc["content"].strip()
+
+    return title, description
 
 
 # ----------------------------------------------------------------------------
@@ -281,7 +325,77 @@ def scrape_4zida_category(category: str) -> list[Listing]:
 
 
 # ----------------------------------------------------------------------------
-# Filtriranje, state i mejl
+# Konfiguracija iz veb aplikacije (config.json)
+# ----------------------------------------------------------------------------
+
+def load_config() -> dict:
+    default = {"exclude_keywords": [], "blocked": [], "favorites": []}
+    if not CONFIG_FILE.exists():
+        return default
+    try:
+        data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"[!] config.json se ne može pročitati ({e}) — koristim prazne liste.")
+        return default
+    for key in default:
+        value = data.get(key)
+        default[key] = value if isinstance(value, list) else []
+    return default
+
+
+def excluded_by_keyword(listing: Listing, keywords: list[str]) -> Optional[str]:
+    """Vrati ključnu reč zbog koje oglas ispada, ili None ako je oglas u redu."""
+    haystack = normalize(f"{listing.title} {listing.description}")
+    for word in keywords:
+        needle = normalize(word).strip()
+        if needle and needle in haystack:
+            return word
+    return None
+
+
+# ----------------------------------------------------------------------------
+# Katalog (data/listings.json) — istorija oglasa, čita ga i veb aplikacija
+# ----------------------------------------------------------------------------
+
+def load_catalog() -> dict:
+    if not CATALOG_FILE.exists():
+        return {}
+    try:
+        data = json.loads(CATALOG_FILE.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def migrate_legacy_seen(catalog: dict, today: str) -> dict:
+    """Stara verzija je čuvala samo spisak URL-ova u seen_listings.json.
+
+    Prenosimo ih u katalog kao već poslate, da prvi sledeći mejl ne bi ponovo
+    poslao sve oglase koji su ranije već stigli.
+    """
+    if catalog or not LEGACY_SEEN_FILE.exists():
+        return catalog
+    try:
+        urls = json.loads(LEGACY_SEEN_FILE.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"[!] seen_listings.json se ne može pročitati ({e}) — preskačem.")
+        return catalog
+    for url in urls:
+        catalog[url] = {"first_seen": today, "last_seen": today,
+                        "notified": True, "missing_runs": 0}
+    print(f"Preneto {len(catalog)} oglasa iz seen_listings.json u katalog.")
+    return catalog
+
+
+def save_catalog(catalog: dict) -> None:
+    CATALOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    CATALOG_FILE.write_text(
+        json.dumps(catalog, ensure_ascii=False, indent=2, sort_keys=True),
+        encoding="utf-8")
+
+
+# ----------------------------------------------------------------------------
+# Filtriranje i mejl
 # ----------------------------------------------------------------------------
 
 def passes_filters(listing: Listing) -> bool:
@@ -294,34 +408,41 @@ def passes_filters(listing: Listing) -> bool:
     return True
 
 
-def load_seen() -> set[str]:
-    if STATE_FILE.exists():
-        try:
-            return set(json.loads(STATE_FILE.read_text(encoding="utf-8")))
-        except (json.JSONDecodeError, OSError):
-            return set()
-    return set()
+def format_price(value: Optional[int]) -> str:
+    return f"{value:,} €".replace(",", ".") if value else "cena N/A"
 
 
-def save_seen(seen: set[str]) -> None:
-    STATE_FILE.write_text(json.dumps(sorted(seen), ensure_ascii=False, indent=2), encoding="utf-8")
+def format_listing(listing: Listing) -> list[str]:
+    area = f"{listing.area_m2:.0f} m²" if listing.area_m2 else "m² N/A"
+    rooms = f"{listing.rooms:g} soba" if listing.rooms else "sobe N/A"
+    lines = [f"\n[{listing.source}] {listing.title}",
+             f"  {format_price(listing.price_eur)} | {area} | {rooms}"]
+    if listing.description:
+        lines.append(f"  {listing.description[:200]}")
+    lines.append(f"  {listing.url}")
+    return lines
 
 
-def build_email_body(new_listings: list[Listing]) -> str:
+def build_email_body(new_listings: list[Listing], favorite_events: list[str],
+                     keywords: list[str]) -> str:
     max_price = f"{MAX_PRICE_EUR:,}".replace(",", ".")
     lines = [
-        f"Novi oglasi za stanove — Novi Beograd, do {max_price} €, "
-        f"{MIN_AREA_M2}m2+, {MIN_ROOMS:g} sobe ili više\n",
-        f"Pronađeno: {len(new_listings)} novih oglasa\n",
-        "=" * 60,
+        f"Novi Beograd — do {max_price} €, {MIN_AREA_M2}m2+, "
+        f"{MIN_ROOMS:g} sobe ili više",
     ]
-    for listing in sorted(new_listings, key=lambda l: (l.price_eur or 0)):
-        price_str = f"{listing.price_eur:,} €".replace(",", ".") if listing.price_eur else "cena N/A"
-        area_str = f"{listing.area_m2:.0f} m²" if listing.area_m2 else "m² N/A"
-        rooms_str = f"{listing.rooms} soba" if listing.rooms else ""
-        lines.append(f"\n[{listing.source}] {listing.title}")
-        lines.append(f"  {price_str} | {area_str} | {rooms_str}")
-        lines.append(f"  {listing.url}")
+    if keywords:
+        lines.append(f"Isključene ključne reči: {', '.join(keywords)}")
+
+    if favorite_events:
+        lines += ["", "=" * 60, "PROMENE NA FAVORITIMA", "=" * 60]
+        lines += favorite_events
+
+    if new_listings:
+        lines += ["", "=" * 60,
+                  f"NOVI OGLASI ({len(new_listings)})", "=" * 60]
+        for listing in sorted(new_listings, key=lambda l: (l.price_eur or 0)):
+            lines += format_listing(listing)
+
     return "\n".join(lines)
 
 
@@ -345,7 +466,7 @@ def send_email(subject: str, body: str) -> None:
 # Main
 # ----------------------------------------------------------------------------
 
-def main():
+def collect_listings() -> list[Listing]:
     all_listings: list[Listing] = []
 
     print("== Halo Oglasi ==")
@@ -357,30 +478,126 @@ def main():
         all_listings.extend(scrape_4zida_category(cat))
 
     print(f"\nUkupno pronađeno (pre filtera i dedup.): {len(all_listings)}")
+    return all_listings
+
+
+def check_favorites(catalog: dict, favorites: list[str],
+                    current: dict[str, Listing]) -> list[str]:
+    """Prati favorite: promena cene i nestanak oglasa sa sajta."""
+    events: list[str] = []
+    for url in favorites:
+        entry = catalog.get(url)
+        if entry is None:
+            continue
+        listing = current.get(url)
+
+        if listing is None:
+            entry["missing_runs"] = entry.get("missing_runs", 0) + 1
+            if entry["missing_runs"] == MISSING_RUNS_BEFORE_ALERT:
+                events.append(
+                    f"\n[NESTAO] {entry.get('title', url)}\n"
+                    f"  Ne pojavljuje se u rezultatima {MISSING_RUNS_BEFORE_ALERT} "
+                    f"provere zaredom — verovatno je prodat ili skinut.\n  {url}")
+            continue
+
+        entry["missing_runs"] = 0
+        old_price = entry.get("price_eur")
+        new_price = listing.price_eur
+        if old_price and new_price and old_price != new_price:
+            direction = "SNIŽENJE" if new_price < old_price else "POSKUPLJENJE"
+            diff = abs(new_price - old_price)
+            events.append(
+                f"\n[{direction}] {listing.title}\n"
+                f"  {format_price(old_price)} -> {format_price(new_price)} "
+                f"({format_price(diff)} razlike)\n  {listing.url}")
+    return events
+
+
+def main():
+    config = load_config()
+    keywords = config["exclude_keywords"]
+    blocked = set(config["blocked"])
+    favorites = config["favorites"]
+    print(f"Config: {len(keywords)} ključnih reči, {len(blocked)} blokiranih, "
+          f"{len(favorites)} favorita")
+
+    today = date.today().isoformat()
+    catalog = migrate_legacy_seen(load_catalog(), today)
 
     # Dedup po URL-u (isti oglas se pojavljuje u više kategorija/strana)
-    unique = {l.key(): l for l in all_listings}.values()
+    unique = {l.key(): l for l in collect_listings()}
+    filtered = {url: l for url, l in unique.items() if passes_filters(l)}
+    print(f"Prošlo numeričke filtere: {len(filtered)}")
 
-    filtered = [l for l in unique if passes_filters(l)]
-    print(f"Prošlo filtere (cena/kvadratura/sobe): {len(filtered)}")
+    # Favoriti se prate i kad su blokirani/isključeni ključnom rečju.
+    favorite_events = check_favorites(catalog, favorites, filtered)
 
-    seen = load_seen()
-    new_listings = [l for l in filtered if l.key() not in seen]
-    print(f"Novo (nije ranije viđeno): {len(new_listings)}")
+    candidates = {url: l for url, l in filtered.items() if url not in blocked}
+    print(f"Posle blokiranih: {len(candidates)}")
 
-    # Ažuriraj state fajl sa SVIM oglasima koji su prošli filtere (ne samo novim),
-    # da ne bismo ponovo slali iste kad istekne pa se ponovo pojavi.
-    seen.update(l.key() for l in filtered)
-    save_seen(seen)
+    # Naslov i opis se skidaju sa stranice oglasa samo jednom po oglasu —
+    # kasnija pokretanja koriste ono što je već u katalogu.
+    fetches = 0
+    for url, listing in candidates.items():
+        entry = catalog.get(url)
+        if entry and entry.get("description") is not None:
+            listing.title = entry.get("title") or listing.title
+            listing.description = entry.get("description") or ""
+            continue
+        if fetches >= MAX_DETAIL_FETCHES:
+            continue
+        fetches += 1
+        print(f"  detalji [{fetches}]: {url}")
+        title, description = fetch_detail(url)
+        listing.title = title or listing.title
+        listing.description = description or ""
+    print(f"Skinuto detalja u ovom pokretanju: {fetches}")
 
-    if not new_listings:
-        print("Nema novih oglasa danas — mejl se ne šalje.")
+    kept: dict[str, Listing] = {}
+    for url, listing in candidates.items():
+        hit = excluded_by_keyword(listing, keywords)
+        if hit:
+            print(f"  [kljucna rec '{hit}'] preskacem: {listing.title}")
+            continue
+        kept[url] = listing
+    print(f"Posle ključnih reči: {len(kept)}")
+
+    new_listings = [l for url, l in kept.items()
+                    if not catalog.get(url, {}).get("notified")]
+    print(f"Novo (nije ranije poslato): {len(new_listings)}")
+
+    # Katalog pamti sve što je prošlo numeričke filtere — i blokirane i
+    # isključene — da bi veb aplikacija mogla da ih prikaže i vrati nazad.
+    for url, listing in filtered.items():
+        entry = catalog.setdefault(url, {"first_seen": today, "missing_runs": 0})
+        entry.update({
+            "source": listing.source,
+            "title": listing.title or entry.get("title", ""),
+            "description": listing.description or entry.get("description", ""),
+            "price_eur": listing.price_eur,
+            "area_m2": listing.area_m2,
+            "rooms": listing.rooms,
+            "location": listing.location,
+            "last_seen": today,
+        })
+        entry.setdefault("notified", False)
+    for listing in new_listings:
+        catalog[listing.url]["notified"] = True
+    save_catalog(catalog)
+
+    if not new_listings and not favorite_events:
+        print("Nema novih oglasa ni promena na favoritima — mejl se ne šalje.")
         return
 
-    body = build_email_body(new_listings)
-    subject = f"🏠 {len(new_listings)} novih stanova — Novi Beograd"
+    body = build_email_body(new_listings, favorite_events, keywords)
+    bits = []
+    if new_listings:
+        bits.append(f"{len(new_listings)} novih")
+    if favorite_events:
+        bits.append(f"{len(favorite_events)} promena na favoritima")
+    subject = f"🏠 {', '.join(bits)} — Novi Beograd"
     send_email(subject, body)
-    print(f"Mejl poslat sa {len(new_listings)} novih oglasa.")
+    print(f"Mejl poslat: {subject}")
 
 
 if __name__ == "__main__":
