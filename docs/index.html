@@ -37,6 +37,9 @@
   }
   h1 { margin: 0; font-size: 17px; }
   .sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .titlebar { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+  .titlebar button { flex: 0 0 auto; padding: 8px 14px; font-size: 13px; }
+  .titlebar button:disabled { opacity: .55; }
   main { padding: 14px; max-width: 780px; margin: 0 auto; }
   .tabs { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; }
   .tabs button {
@@ -90,8 +93,14 @@
 <body>
 
 <header>
-  <h1>Stan Watcher — Novi Beograd</h1>
-  <div class="sub" id="summary">Učitavanje…</div>
+  <div class="titlebar">
+    <div>
+      <h1>Stan Watcher — Novi Beograd</h1>
+      <div class="sub" id="summary">Učitavanje…</div>
+    </div>
+    <button class="primary" id="runBtn">Proveri sada</button>
+  </div>
+  <div class="sub" id="runStatus"></div>
   <nav class="tabs" id="tabs">
     <button data-tab="listings" aria-selected="true">Oglasi</button>
     <button data-tab="favorites" aria-selected="false">Favoriti</button>
@@ -132,7 +141,7 @@
         se isključivo na api.github.com. Nikad se ne upisuje u repozitorijum.</div>
       <label for="repo">Repozitorijum</label>
       <input type="text" id="repo" placeholder="bjankovic16/Flat-scraper">
-      <label for="token">Fine-grained token (Contents: Read and write)</label>
+      <label for="token">Fine-grained token (Contents + Actions: Read and write)</label>
       <input type="password" id="token" placeholder="github_pat_…">
       <div class="row">
         <button class="primary" id="save">Sačuvaj i učitaj</button>
@@ -170,8 +179,8 @@ function money(v) {
   return v ? new Intl.NumberFormat("sr-RS").format(v) + " €" : "cena N/A";
 }
 
-async function gh(path, options = {}) {
-  const res = await fetch(`${API}/repos/${repo()}/contents/${path}`, {
+async function ghApi(path, options = {}) {
+  const res = await fetch(`${API}/repos/${repo()}/${path}`, {
     ...options,
     headers: {
       "Accept": "application/vnd.github+json",
@@ -184,8 +193,11 @@ async function gh(path, options = {}) {
     const body = await res.text();
     throw new Error(`${res.status} ${res.statusText} — ${body.slice(0, 200)}`);
   }
-  return res.json();
+  // Pokretanje workflow-a vraća 204 bez tela.
+  return res.status === 204 ? null : res.json();
 }
+
+const gh = (path, options) => ghApi(`contents/${path}`, options);
 
 // GitHub vraća base64; atob ne razume UTF-8 pa ide preko TextDecoder-a.
 function decode(b64) {
@@ -214,6 +226,7 @@ async function loadAll() {
       catalog = {};  // skripta još nije napravila katalog
     }
     render();
+    refreshRun();
   } catch (e) {
     $("summary").textContent = "Greška: " + e.message;
     toast("Ne mogu da učitam — proveri token", 4000);
@@ -310,6 +323,70 @@ function render() {
   });
 }
 
+const WORKFLOW = "daily-check.yml";
+let pollTimer = null;
+
+const RUN_LABELS = {
+  queued: "u redu za izvršavanje", in_progress: "u toku", requested: "zatraženo",
+  waiting: "čeka", pending: "čeka",
+};
+const RESULT_LABELS = {
+  success: "uspešno", failure: "PAO", cancelled: "otkazan",
+  skipped: "preskočen", timed_out: "istekao",
+};
+
+async function refreshRun({ keepPolling = false } = {}) {
+  if (!token()) return;
+  try {
+    const data = await ghApi(`actions/workflows/${WORKFLOW}/runs?per_page=1`);
+    const run = (data.workflow_runs || [])[0];
+    if (!run) { $("runStatus").textContent = ""; return; }
+
+    const when = new Date(run.run_started_at || run.created_at)
+      .toLocaleString("sr-RS", { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" });
+    const done = run.status === "completed";
+    const label = done
+      ? (RESULT_LABELS[run.conclusion] || run.conclusion)
+      : (RUN_LABELS[run.status] || run.status);
+    $("runStatus").textContent = `Poslednja provera: ${when} — ${label}`;
+    $("runBtn").disabled = !done;
+    $("runBtn").textContent = done ? "Proveri sada" : "Radi…";
+
+    if (!done && keepPolling) {
+      clearTimeout(pollTimer);
+      pollTimer = setTimeout(() => refreshRun({ keepPolling: true }), 10000);
+    } else if (done && keepPolling) {
+      // Provera je gotova — povuci osvežen katalog.
+      toast(run.conclusion === "success" ? "Provera gotova — osvežavam" : "Provera nije uspela");
+      loadAll();
+    }
+  } catch (e) {
+    // Token bez Actions dozvole — dugme radi, samo nema statusa.
+    $("runStatus").textContent = "";
+  }
+}
+
+async function startRun() {
+  if (!token()) { switchTab("settings"); return; }
+  $("runBtn").disabled = true;
+  try {
+    await ghApi(`actions/workflows/${WORKFLOW}/dispatches`, {
+      method: "POST",
+      body: JSON.stringify({ ref: "main" }),
+    });
+    toast("Provera pokrenuta — traje 2-5 minuta");
+    $("runBtn").textContent = "Radi…";
+    // GitHub-u treba koji sekund da run postane vidljiv preko API-ja.
+    setTimeout(() => refreshRun({ keepPolling: true }), 4000);
+  } catch (e) {
+    $("runBtn").disabled = false;
+    const msg = /403|404/.test(e.message)
+      ? "Tokenu fali dozvola Actions: Read and write"
+      : e.message;
+    toast("Ne mogu da pokrenem: " + msg, 5000);
+  }
+}
+
 function switchTab(name) {
   tab = name;
   ["listings", "favorites", "blocked", "keywords", "settings"].forEach((t) => {
@@ -320,6 +397,7 @@ function switchTab(name) {
   });
 }
 
+$("runBtn").onclick = startRun;
 $("tabs").onclick = (e) => { if (e.target.dataset.tab) switchTab(e.target.dataset.tab); };
 $("search").oninput = render;
 $("kwAdd").onclick = () => {
