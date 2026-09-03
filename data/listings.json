@@ -49,8 +49,10 @@
   },
   "https://www.4zida.rs/prodaja-stanova/bezanijska-kosa-2-novi-beograd-beograd/dvosoban-stan/695b089f8ab81dfb800f7523": {
     "area_m2": 85.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 17 Viktora Novaka Bežanijska kosa 2, Novi Beograd, Beograd 245.000 € 2.882 €/m² 85m² 2 sobe 4/4 sprata Prazno Uknjiženo Agencija Ažurirano 02.09.2026.",
     "description": "Dvosoban stan u zgradi za prodaju, uknjižen, Bežanijska kosa 2, 85 m2, na 4. spratu. Stanje - luksuzno, Centralno, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
+    "floor": null,
     "last_seen": "2026-09-03",
     "location": "Novi Beograd",
     "missing_runs": 0,
@@ -58,7 +60,8 @@
     "price_eur": 245000,
     "rooms": 2.0,
     "source": "4zida.rs",
-    "title": "Dvosoban stan na prodaju, Viktora Novaka, 245.000€, 85m²"
+    "title": "Dvosoban stan na prodaju, Viktora Novaka, 245.000€, 85m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/bezanijska-kosa-3-novi-beograd-beograd/dvosoban-stan/695d26b833c9a56746059cb1": {
     "area_m2": 85.0,
