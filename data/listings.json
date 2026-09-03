@@ -1,6 +1,7 @@
 {
   "https://www.4zida.rs/prodaja-stanova/a-blok-blok-67a-novi-beograd-beograd/dvoiposoban-stan/69ca3895b5cd64ba7c06c278": {
     "area_m2": 75.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 22 A Blok - Blok 67a Novi Beograd, Beograd 340.000 € 4.533 €/m² 75m² 2.5 sobe 5. sprat Prazno Garaža i parking Useljivo Agencija Ažurirano 27.08.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, A Blok - Blok 67a, 75 m2, na 5. spratu, ima lift. Stanje - Novo, ima terasu. Ima parking mesto. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -11,10 +12,12 @@
     "price_eur": 340000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, A Blok - Blok 67a, 340.000€, 75m²"
+    "title": "Dvoiposoban stan na prodaju, A Blok - Blok 67a, 340.000€, 75m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/bezanijska-kosa-1-novi-beograd-beograd/dvoiposoban-stan/6a43c5bc582aa3653b0c22bf": {
     "area_m2": 72.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 16 Partizanske avijacije Bežanijska kosa 1, Novi Beograd, Beograd 247.000 € 3.431 €/m² 72m² 2.5 sobe 3/3 sprata Prazno Parking Uknjiženo Useljivo Agencija Ažurirano 02.09.2026.",
     "description": "Dvoiposoban stan za prodaju, uknjižen, Bežanijska kosa 1, 72 m2, na 3. spratu. Centralno, ima terasu, ima kupatilo. Ima parking mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -25,10 +28,12 @@
     "price_eur": 247000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Partizanske avijacije, 247.000€, 72m²"
+    "title": "Dvoiposoban stan na prodaju, Partizanske avijacije, 247.000€, 72m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/bezanijska-kosa-1-novi-beograd-beograd/dvosoban-stan/695bfdcf727d7043de0c370f": {
     "area_m2": 85.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 16 Viktora Novaka Bežanijska kosa 1, Novi Beograd, Beograd 239.000 € 2.812 €/m² 85m² 2 sobe 4/4 sprata Parking Uknjiženo Useljivo Agencija Ažurirano 02.09.2026.",
     "description": "Dvosoban stan u zgradi za prodaju, uknjižen, Bežanijska kosa 1, 85 m2, na 4. spratu, ima lift. Centralno, ima terasu, ima lođu. Ima parking mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -39,7 +44,8 @@
     "price_eur": 239000,
     "rooms": 2.0,
     "source": "4zida.rs",
-    "title": "Dvosoban stan na prodaju, Viktora Novaka, 239.000€, 85m²"
+    "title": "Dvosoban stan na prodaju, Viktora Novaka, 239.000€, 85m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/bezanijska-kosa-2-novi-beograd-beograd/dvosoban-stan/695b089f8ab81dfb800f7523": {
     "area_m2": 85.0,
@@ -56,6 +62,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/bezanijska-kosa-3-novi-beograd-beograd/dvosoban-stan/695d26b833c9a56746059cb1": {
     "area_m2": 85.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 13 Viktora Novaka Bežanijska kosa 3, Novi Beograd, Beograd 239.000 € 2.812 €/m² 85m² 2 sobe 4/4 sprata Prazno Uknjiženo Useljivo Agencija Ažurirano 03.09.2026.",
     "description": "Dvosoban stan za prodaju, uknjižen, Bežanijska kosa 3, 85 m2, na 4. spratu, ima lift. Stanje - Uobičajeno, Centralno, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -66,10 +73,12 @@
     "price_eur": 239000,
     "rooms": 2.0,
     "source": "4zida.rs",
-    "title": "Dvosoban stan na prodaju, Viktora Novaka, 239.000€, 85m²"
+    "title": "Dvosoban stan na prodaju, Viktora Novaka, 239.000€, 85m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/bezanijska-kosa-3-novi-beograd-beograd/troiposoban-stan/6a6f64019d583f8d6103c09b": {
     "area_m2": 97.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 19 Viktora Novaka Bežanijska kosa 3, Novi Beograd, Beograd 350.000 € 3.608 €/m² 97m² 3.5 sobe 3/5 spratova Prazno Parking Uknjiženo Agencija Ažurirano 01.09.2026.",
     "description": "Troiposoban stan za prodaju, uknjižen, Bežanijska kosa 3, 97 m2, na 3. spratu, ima lift. Centralno, ima terasu, ima lođu, ima kupatilo. Ima parking mesto.",
     "first_seen": "2026-09-03",
     "floor": 3,
@@ -80,10 +89,12 @@
     "price_eur": 350000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Viktora Novaka, 350.000€, 97m²"
+    "title": "Troiposoban stan na prodaju, Viktora Novaka, 350.000€, 97m²",
+    "total_floors": 5
   },
   "https://www.4zida.rs/prodaja-stanova/blok-1-fontana-novi-beograd-beograd/cetvorosoban-stan/69cfe7c2295a6be7d30663b6": {
     "area_m2": 92.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 19 Studentska Blok 1 - Fontana, Novi Beograd, Beograd 345.000 € 3.750 €/m² 92m² 4 sobe 3. sprat Prazno Uknjiženo Agencija Ažurirano 31.08.2026.",
     "description": "Četvorosoban stan za prodaju, uknjižen, Blok 1 - Fontana, 92 m2, na 3. spratu. Stanje - Uobičajeno, Centralno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -94,10 +105,12 @@
     "price_eur": 345000,
     "rooms": 4.0,
     "source": "4zida.rs",
-    "title": "Četvorosoban stan na prodaju, Studentska, 345.000€, 92m²"
+    "title": "Četvorosoban stan na prodaju, Studentska, 345.000€, 92m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-1-fontana-novi-beograd-beograd/troiposoban-stan/6a55282b0a11a147d60a6750": {
     "area_m2": 71.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 12 Omladinskih brigada Blok 1 - Fontana, Novi Beograd, Beograd 265.000 € 3.732 €/m² 71m² 3.5 sobe 3/8 spratova Uknjiženo Useljivo Agencija Ažurirano 12.08.2026.",
     "description": "Troiposoban stan u zgradi za prodaju, uknjižen, Blok 1 - Fontana, 71 m2, na 3. spratu, ima lift. Centralno, ima terasu, ima lođu.",
     "first_seen": "2026-09-03",
     "floor": 3,
@@ -108,10 +121,12 @@
     "price_eur": 265000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Omladinskih brigada, 265.000€, 71m²"
+    "title": "Troiposoban stan na prodaju, Omladinskih brigada, 265.000€, 71m²",
+    "total_floors": 8
   },
   "https://www.4zida.rs/prodaja-stanova/blok-12-yubc-novi-beograd-beograd/dvosoban-stan/6a708db452e07ef58e055e3c": {
     "area_m2": 75.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 13 Bulevar Mihajla Pupina 10 Blok 12 - YUBC, Novi Beograd, Beograd 275.000 € 3.667 €/m² MOŽE NA KREDIT 75m² 2 sobe 4/6 spratova Polunamešteno Uknjiženo Agencija Ažurirano 02.09.2026.",
     "description": "Dvosoban stan u zgradi za prodaju, uknjižen, Blok 12 - YUBC, 75 m2, na 4. spratu, ima lift. Stanje - luksuzno, Centralno, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": 4,
@@ -122,7 +137,8 @@
     "price_eur": 275000,
     "rooms": 2.0,
     "source": "4zida.rs",
-    "title": "Dvosoban stan na prodaju, Bulevar Mihajla Pupina 10, 275.000€, 75m²"
+    "title": "Dvosoban stan na prodaju, Bulevar Mihajla Pupina 10, 275.000€, 75m²",
+    "total_floors": 6
   },
   "https://www.4zida.rs/prodaja-stanova/blok-12-yubc-novi-beograd-beograd/trosoban-stan/69f9a67bcd6a6da31a03ae4c": {
     "area_m2": 90.0,
@@ -166,6 +182,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-19a-novi-beograd-beograd/troiposoban-stan/682b0276d0d1bf3a8d01337e": {
     "area_m2": 73.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 9 MILENTIJA POPOVICA Blok 19a, Novi Beograd, Beograd 220.000 € 3.014 €/m² 73m² 3.5 sobe Agencija Ažurirano 13.08.2026.",
     "description": "Troiposoban stan u zgradi za prodaju, Blok 19a, 73 m2, na visokom prizemlju, ima lift. Centralno, ima terasu.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -176,10 +193,12 @@
     "price_eur": 220000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, MILENTIJA POPOVICA, 220.000€, 73m²"
+    "title": "Troiposoban stan na prodaju, MILENTIJA POPOVICA, 220.000€, 73m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-21-novi-beograd-beograd/dvosoban-stan/69ec9d233b78f018220ed91a": {
     "area_m2": 76.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 16 Blok 21 Novi Beograd, Beograd 278.500 € 3.664 €/m² MOŽE NA KREDIT 76m² 2 sobe 3/4 sprata Prazno Uknjiženo Vlasnik Ažurirano 30.08.2026.",
     "description": "Dvosoban stan u zgradi za prodaju, uknjižen, Blok 21, 76 m2, na 3. spratu. Stanje - Uobičajeno, Centralno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -190,7 +209,8 @@
     "price_eur": 278500,
     "rooms": 2.0,
     "source": "4zida.rs",
-    "title": "Dvosoban stan na prodaju, Blok 21, 278.500€, 76m²"
+    "title": "Dvosoban stan na prodaju, Blok 21, 278.500€, 76m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-21-novi-beograd-beograd/trosoban-stan/6a3fced868d14d5a24065adb": {
     "area_m2": 77.0,
@@ -221,6 +241,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-22-novi-beograd-beograd/trosoban-stan/6a22a98064d1354d9e0709e2": {
     "area_m2": 80.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 20 Blok 22 Novi Beograd, Beograd 339.000 € 4.238 €/m² 80m² 3 sobe 6/7 spratova Prazno Uknjiženo Agencija Ažurirano 03.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, uknjižen, Blok 22, 80 m2, na 6. spratu, ima lift. Centralno, ima terasu.",
     "first_seen": "2026-09-03",
     "floor": 6,
@@ -231,7 +252,8 @@
     "price_eur": 339000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Blok 22, 339.000€, 80m²"
+    "title": "Trosoban stan na prodaju, Blok 22, 339.000€, 80m²",
+    "total_floors": 7
   },
   "https://www.4zida.rs/prodaja-stanova/blok-23-novi-beograd-beograd/troiposoban-stan/68d7c4eb10318556e1041e59": {
     "area_m2": 70.0,
@@ -248,6 +270,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-23-novi-beograd-beograd/trosoban-stan/6a6b80807a86b0847902bae3": {
     "area_m2": 70.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 15 Bulevar Milutina Milankovića Blok 23, Novi Beograd, Beograd 279.000 € 3.986 €/m² 70m² 3 sobe 5/12 spratova Prazno Uknjiženo Agencija Ažurirano 02.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, uknjižen, Blok 23, 70 m2, na 5. spratu, ima lift. Centralno, ima lođu.",
     "first_seen": "2026-09-03",
     "floor": 5,
@@ -258,10 +281,12 @@
     "price_eur": 279000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Bulevar Milutina Milankovića, 279.000€, 70m²"
+    "title": "Trosoban stan na prodaju, Bulevar Milutina Milankovića, 279.000€, 70m²",
+    "total_floors": 12
   },
   "https://www.4zida.rs/prodaja-stanova/blok-25-arena-novi-beograd-beograd/dvoiposoban-stan/6a95b7f1246ba15fee008f2e": {
     "area_m2": 77.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 15 Blok 25 - Arena Novi Beograd, Beograd 269.000 € 3.494 €/m² MOŽE NA KREDIT 77m² 2.5 sobe 2/6 spratova Prazno Uknjiženo Agencija Ažurirano 31.08.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, uknjižen, Blok 25 - Arena, 77 m2, na 2. spratu, ima lift. Stanje - Potrebno renoviranje, Centralno, ima lođu, ima kupatilo, ima toalet.",
     "first_seen": "2026-09-03",
     "floor": 2,
@@ -272,7 +297,8 @@
     "price_eur": 269000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Blok 25 - Arena, 269.000€, 77m²"
+    "title": "Dvoiposoban stan na prodaju, Blok 25 - Arena, 269.000€, 77m²",
+    "total_floors": 6
   },
   "https://www.4zida.rs/prodaja-stanova/blok-25-arena-novi-beograd-beograd/troiposoban-stan/64784a5f0c1ebb6d2304ca02": {
     "area_m2": 83.0,
@@ -315,6 +341,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-29-novi-beograd-beograd/dvoiposoban-stan/6a95e1bc11214999fa0e2279": {
     "area_m2": 73.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 18 Bulevar Zorana Đinđića Blok 29, Novi Beograd, Beograd 320.000 € 4.384 €/m² 73m² 2.5 sobe 4/7 spratova Prazno Parking Uknjiženo Agencija Ažurirano 31.08.2026.",
     "description": "Dvoiposoban stan za prodaju, uknjižen, Blok 29, 73 m2, na 4. spratu, ima lift. Stanje - Renovirano, Centralno, ima terasu, ima lođu, ima kupatilo. Ima parking mesto.",
     "first_seen": "2026-09-03",
     "floor": 4,
@@ -325,7 +352,8 @@
     "price_eur": 320000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Bulevar Zorana Đinđića, 320.000€, 73m²"
+    "title": "Dvoiposoban stan na prodaju, Bulevar Zorana Đinđića, 320.000€, 73m²",
+    "total_floors": 7
   },
   "https://www.4zida.rs/prodaja-stanova/blok-30-novi-beograd-beograd/troiposoban-stan/6a2aea80b8ccf056b4044503": {
     "area_m2": 85.0,
@@ -355,6 +383,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-33-geneks-novi-beograd-beograd/troiposoban-stan/65d7770ed8ed61050106af35": {
     "area_m2": 90.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 15 Bulevar Arsenija Čarnojevića Blok 33 - Geneks, Novi Beograd, Beograd 290.000 € 3.222 €/m² 90m² 3.5 sobe 4/4 sprata Prazno Uknjiženo Agencija Ažurirano 01.09.2026.",
     "description": "Troiposoban stan za prodaju, uknjižen, Blok 33 - Geneks, 90 m2, na 4. spratu, ima lift. Centralno, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -365,10 +394,12 @@
     "price_eur": 290000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Bulevar Arsenija Čarnojevića, 290.000€, 90m²"
+    "title": "Troiposoban stan na prodaju, Bulevar Arsenija Čarnojevića, 290.000€, 90m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-34-studentski-grad-novi-beograd-beograd/trosoban-stan/681f41c80eaee0fba60dc2f6": {
     "area_m2": 86.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 17 Bulevar Zorana Djindjica Blok 34 - Studentski grad, Novi Beograd, Beograd 279.000 € 3.244 €/m² 86m² 3 sobe Uknjiženo Useljivo Agencija Ažurirano 02.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, uknjižen, Blok 34 - Studentski grad, 86 m2, na visokom prizemlju, ima lift. Centralno, ima terasu.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -379,10 +410,12 @@
     "price_eur": 279000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Bulevar Zorana Djindjica, 279.000€, 86m²"
+    "title": "Trosoban stan na prodaju, Bulevar Zorana Djindjica, 279.000€, 86m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-34-studentski-grad-novi-beograd-beograd/trosoban-stan/686fcd4369c7bc681f07fa72": {
     "area_m2": 86.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 11 Bulevar Zorana Đinđića Blok 34 - Studentski grad, Novi Beograd, Beograd 279.000 € 3.244 €/m² 86m² 3 sobe Prazno Uknjiženo Agencija Ažurirano 03.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, uknjižen, Blok 34 - Studentski grad, 86 m2, na visokom prizemlju, ima lift. Centralno, ima terasu.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -393,7 +426,8 @@
     "price_eur": 279000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Bulevar Zorana Đinđića, 279.000€, 86m²"
+    "title": "Trosoban stan na prodaju, Bulevar Zorana Đinđića, 279.000€, 86m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-37-novi-beograd-beograd/cetvorosoban-stan/69c433b21dc9849cd8023caa": {
     "area_m2": 95.0,
@@ -436,6 +470,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-37-novi-beograd-beograd/troiposoban-stan/6a0de40068cf31a55b0a1b82": {
     "area_m2": 71.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 15 Narodnih heroja Blok 37, Novi Beograd, Beograd 256.000 € 3.606 €/m² 71m² 3.5 sobe 1/4 sprata Uknjiženo Useljivo Agencija Ažurirano 18.08.2026.",
     "description": "Troiposoban stan za prodaju, uknjižen, Blok 37, 71 m2, na 1. spratu. Stanje - Renovirano, Centralno, ima lođu.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -446,10 +481,12 @@
     "price_eur": 256000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Narodnih heroja, 256.000€, 71m²"
+    "title": "Troiposoban stan na prodaju, Narodnih heroja, 256.000€, 71m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-37a-novi-beograd-beograd/cetvorosoban-stan/69cb634b9c7cea77d201dda4": {
     "area_m2": 95.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 11 Bulevar Arsenija Čarnojevića Blok 37a, Novi Beograd, Beograd 310.000 € 3.263 €/m² 95m² 4 sobe 12. sprat Agencija Ažurirano 28.08.2026.",
     "description": "Četvorosoban stan za prodaju, Blok 37a, 95 m2, na 12. spratu, ima lift. Centralno, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -460,7 +497,8 @@
     "price_eur": 310000,
     "rooms": 4.0,
     "source": "4zida.rs",
-    "title": "Četvorosoban stan na prodaju, Bulevar Arsenija Čarnojevića, 310.000€, 95m²"
+    "title": "Četvorosoban stan na prodaju, Bulevar Arsenija Čarnojevića, 310.000€, 95m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-38-novi-beograd-beograd/dvoiposoban-stan/6a1890e31f94b18f9809fa95": {
     "area_m2": 72.0,
@@ -490,6 +528,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-44-tc-piramida-novi-beograd-beograd/cetvoroiposoban-stan/69dcc142d815e372410ee81e": {
     "area_m2": 110.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 13 Gandijeva Blok 44 TC Piramida, Novi Beograd, Beograd 335.000 € 3.045 €/m² MOŽE NA KREDIT 110m² 4.5 sobe 6/7 spratova Polunamešteno Uknjiženo Agencija Ažurirano 01.09.2026.",
     "description": "Četvoroiposoban stan u zgradi za prodaju, uknjižen, Blok 44 TC Piramida, 110 m2, na 6. spratu, ima lift. Stanje - Renovirano, Centralno, ima terasu, ima lođu, ima kupatilo, ima toalet.",
     "first_seen": "2026-09-03",
     "floor": 6,
@@ -500,7 +539,8 @@
     "price_eur": 335000,
     "rooms": 4.5,
     "source": "4zida.rs",
-    "title": "Četvoroiposoban stan na prodaju, Gandijeva, 335.000€, 110m²"
+    "title": "Četvoroiposoban stan na prodaju, Gandijeva, 335.000€, 110m²",
+    "total_floors": 7
   },
   "https://www.4zida.rs/prodaja-stanova/blok-45-novi-beograd-beograd/cetvorosoban-stan/6a3fa2709f9e647c5b04d2a6": {
     "area_m2": 82.0,
@@ -517,6 +557,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-45-novi-beograd-beograd/dvoiposoban-stan/6a85e0bfd26e0eabfd0ed4d3": {
     "area_m2": 85.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 19 Dr Ivana Ribara Blok 45, Novi Beograd, Beograd 272.000 € 3.200 €/m² MOŽE NA KREDIT 85m² 2.5 sobe 2/5 spratova Polunamešteno Uknjiženo Agencija Ažurirano 19.08.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, uknjižen, Blok 45, 85 m2, na 2. spratu, ima lift. Stanje - Renovirano, Centralno, ima terasu, ima kupatilo, ima toalet.",
     "first_seen": "2026-09-03",
     "floor": 2,
@@ -527,7 +568,8 @@
     "price_eur": 272000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Dr Ivana Ribara, 272.000€, 85m²"
+    "title": "Dvoiposoban stan na prodaju, Dr Ivana Ribara, 272.000€, 85m²",
+    "total_floors": 5
   },
   "https://www.4zida.rs/prodaja-stanova/blok-45-novi-beograd-beograd/dvosoban-stan/6a3947cc44c1e519ce0f1c6b": {
     "area_m2": 70.0,
@@ -609,6 +651,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-62-novi-beograd-beograd/dvoiposoban-stan/6a2214c355369b2d3f0a3ea1": {
     "area_m2": 71.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 12 Jurija Gagarina Blok 62, Novi Beograd, Beograd 220.000 € 3.099 €/m² MOŽE NA KREDIT 71m² 2.5 sobe 3/9 spratova Uknjiženo Agencija Ažurirano 03.09.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, uknjižen, Blok 62, 71 m2, na 3. spratu, ima lift. Stanje - Uobičajeno, Centralno, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": 3,
@@ -619,7 +662,8 @@
     "price_eur": 220000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Jurija Gagarina, 220.000€, 71m²"
+    "title": "Dvoiposoban stan na prodaju, Jurija Gagarina, 220.000€, 71m²",
+    "total_floors": 9
   },
   "https://www.4zida.rs/prodaja-stanova/blok-62-novi-beograd-beograd/dvoiposoban-stan/6a2824458010bb7c000eae71": {
     "area_m2": 75.0,
@@ -636,6 +680,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-62-novi-beograd-beograd/dvoiposoban-stan/6a423e222d0df898100b9ee7": {
     "area_m2": 74.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 19 Jurija Gagarina Blok 62, Novi Beograd, Beograd 220.000 € 2.973 €/m² MOŽE NA KREDIT 74m² 2.5 sobe Uknjiženo Agencija Ažurirano 28.08.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, uknjižen, Blok 62, 74 m2, ima lift. Stanje - Potrebno renoviranje, Centralno, ima lođu, ima kupatilo, ima toalet.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -646,7 +691,8 @@
     "price_eur": 220000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Jurija Gagarina, 220.000€, 74m²"
+    "title": "Dvoiposoban stan na prodaju, Jurija Gagarina, 220.000€, 74m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-62-novi-beograd-beograd/trosoban-stan/6a202d2476e0dc16990724d2": {
     "first_seen": "2026-09-03",
@@ -656,6 +702,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-63-novi-beograd-beograd/cetvorosoban-stan/6a995a70f9371393080a667a": {
     "area_m2": 87.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 17 Nehruova Blok 63, Novi Beograd, Beograd 269.000 € 3.092 €/m² 87m² 4 sobe 5/9 spratova Prazno Garaža Uknjiženo Agencija Ažurirano 03.09.2026.",
     "description": "Četvorosoban stan u zgradi za prodaju, uknjižen, Blok 63, 87 m2, na 5. spratu, ima lift. Centralno, ima lođu. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": 5,
@@ -666,7 +713,8 @@
     "price_eur": 269000,
     "rooms": 4.0,
     "source": "4zida.rs",
-    "title": "Četvorosoban stan na prodaju, Nehruova, 269.000€, 87m²"
+    "title": "Četvorosoban stan na prodaju, Nehruova, 269.000€, 87m²",
+    "total_floors": 9
   },
   "https://www.4zida.rs/prodaja-stanova/blok-63-novi-beograd-beograd/dvoiposoban-stan/67f38842e430c478ea080547": {
     "area_m2": 92.0,
@@ -696,6 +744,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-63-novi-beograd-beograd/dvoiposoban-stan/6a8477c4ed1abbdd74070ee4": {
     "area_m2": 75.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 17 Gandijeva Blok 63, Novi Beograd, Beograd 265.000 € 3.533 €/m² 75m² 2.5 sobe 6/9 spratova Prazno Uknjiženo Agencija Ažurirano 01.09.2026.",
     "description": "Dvoiposoban stan za prodaju, uknjižen, Blok 63, 75 m2, na 6. spratu, ima lift. Stanje - Uobičajeno, Centralno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": 6,
@@ -706,7 +755,8 @@
     "price_eur": 265000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Gandijeva, 265.000€, 75m²"
+    "title": "Dvoiposoban stan na prodaju, Gandijeva, 265.000€, 75m²",
+    "total_floors": 9
   },
   "https://www.4zida.rs/prodaja-stanova/blok-63-novi-beograd-beograd/troiposoban-stan/6a5dec14368acdca2d08fe2a": {
     "area_m2": 85.0,
@@ -736,6 +786,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-63-novi-beograd-beograd/trosoban-stan/69c25a5dbc93823c760f1532": {
     "area_m2": 84.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 16 Gandijeva Blok 63, Novi Beograd, Beograd 267.000 € 3.179 €/m² 84m² 3 sobe 1/4 sprata Prazno Uknjiženo Agencija Ažurirano 28.08.2026.",
     "description": "Trosoban stan za prodaju, uknjižen, Blok 63, 84 m2, na 1. spratu. Stanje - Uobičajeno, Centralno, ima terasu, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -746,10 +797,12 @@
     "price_eur": 267000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Gandijeva, 267.000€, 84m²"
+    "title": "Trosoban stan na prodaju, Gandijeva, 267.000€, 84m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-63-novi-beograd-beograd/trosoban-stan/69d798d3668b9259070085ec": {
     "area_m2": 86.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 15 Gandijeva Blok 63, Novi Beograd, Beograd 266.000 € 3.093 €/m² 86m² 3 sobe 1/3 sprata Prazno Parking Uknjiženo Agencija Ažurirano 03.09.2026.",
     "description": "Trosoban stan za prodaju, uknjižen, Blok 63, 86 m2, na 1. spratu. Centralno, ima lođu, ima kupatilo. Ima parking mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -760,10 +813,12 @@
     "price_eur": 266000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Gandijeva, 266.000€, 86m²"
+    "title": "Trosoban stan na prodaju, Gandijeva, 266.000€, 86m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-63-novi-beograd-beograd/trosoban-stan/6a80834497a59760b000d9c2": {
     "area_m2": 74.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 15 Blok 63 Novi Beograd, Beograd 300.000 € 4.054 €/m² 74m² 3 sobe 6/12 spratova Polunamešteno Agencija Ažurirano 21.08.2026.",
     "description": "Trosoban stan u zgradi za prodaju, Blok 63, 74 m2, na 6. spratu.",
     "first_seen": "2026-09-03",
     "floor": 6,
@@ -774,10 +829,12 @@
     "price_eur": 300000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Blok 63, 300.000€, 74m²"
+    "title": "Trosoban stan na prodaju, Blok 63, 300.000€, 74m²",
+    "total_floors": 12
   },
   "https://www.4zida.rs/prodaja-stanova/blok-64-novi-beograd-beograd/dvosoban-stan/6a987506e61b63fc4e0fbeed": {
     "area_m2": 83.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 12 Omladinskih Brigada Blok 64, Novi Beograd, Beograd 340.000 € 4.096 €/m² 83m² 2 sobe 2/7 spratova Prazno Garaža Uknjiženo Useljivo Agencija Ažurirano 02.09.2026.",
     "description": "Dvosoban stan za prodaju, uknjižen, Blok 64, 83 m2, na 2. spratu, ima lift. Centralno, ima terasu, ima kupatilo. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": 2,
@@ -788,10 +845,12 @@
     "price_eur": 340000,
     "rooms": 2.0,
     "source": "4zida.rs",
-    "title": "Dvosoban stan na prodaju, Omladinskih Brigada, 340.000€, 83m²"
+    "title": "Dvosoban stan na prodaju, Omladinskih Brigada, 340.000€, 83m²",
+    "total_floors": 7
   },
   "https://www.4zida.rs/prodaja-stanova/blok-64-novi-beograd-beograd/trosoban-stan/6a982e3eb2a6003fe90448e5": {
     "area_m2": 81.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 15 Gandijeva Blok 64, Novi Beograd, Beograd 299.700 € 3.700 €/m² 81m² 3 sobe 4/5 spratova Uknjiženo Useljivo Agencija Ažurirano 02.09.2026.",
     "description": "Trosoban stan za prodaju, uknjižen, Blok 64, 81 m2, na 4. spratu, ima lift. Stanje - Potrebno renoviranje, Centralno, ima terasu.",
     "first_seen": "2026-09-03",
     "floor": 4,
@@ -802,10 +861,12 @@
     "price_eur": 299700,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Gandijeva, 299.700€, 81m²"
+    "title": "Trosoban stan na prodaju, Gandijeva, 299.700€, 81m²",
+    "total_floors": 5
   },
   "https://www.4zida.rs/prodaja-stanova/blok-65-novi-beograd-beograd/dvoiposoban-stan/672e2da8d14bf72acb00c4d3": {
     "area_m2": 70.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 6 Blok 65 Novi Beograd, Beograd 280.000 € 4.000 €/m² MOŽE NA KREDIT 70m² 2.5 sobe 2/9 spratova Prazno Garaža Uknjiženo Useljivo Agencija Ažurirano 30.08.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, uknjižen, Blok 65, 70 m2, na 2. spratu, ima lift. Stanje - Novo, Centralno, ima terasu. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": 2,
@@ -816,10 +877,12 @@
     "price_eur": 280000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Blok 65, 280.000€, 70m²"
+    "title": "Dvoiposoban stan na prodaju, Blok 65, 280.000€, 70m²",
+    "total_floors": 9
   },
   "https://www.4zida.rs/prodaja-stanova/blok-65-novi-beograd-beograd/trosoban-stan/68ef59d919f67ce06902a2e1": {
     "area_m2": 71.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 13 Blok 65 Novi Beograd, Beograd 258.054 € 3.635 €/m² MOŽE NA KREDIT 71m² 3 sobe 2/8 spratova Prazno Garaža i parking Uknjiženo Agencija Ažurirano 26.08.2026.",
     "description": "Trosoban stan u zgradi za prodaju, uknjižen, Blok 65, 71 m2, na 2. spratu, ima lift. Stanje - Novo, Centralno, ima terasu. Ima parking mesto. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": 2,
@@ -830,10 +893,12 @@
     "price_eur": 258054,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Blok 65, 258.054€, 71m²"
+    "title": "Trosoban stan na prodaju, Blok 65, 258.054€, 71m²",
+    "total_floors": 8
   },
   "https://www.4zida.rs/prodaja-stanova/blok-65-novi-beograd-beograd/trosoban-stan/6946e87a12f357c3c507b4b8": {
     "area_m2": 85.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 16 Blok 65 Novi Beograd, Beograd 318.424 € 3.746 €/m² MOŽE NA KREDIT 85m² 3 sobe 4/9 spratova Prazno Garaža i parking Uknjiženo Agencija Ažurirano 02.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, uknjižen, Blok 65, 85 m2, na 4. spratu, ima lift. Stanje - Novo, Centralno, ima terasu, ima lođu. Ima parking mesto. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": 4,
@@ -844,10 +909,12 @@
     "price_eur": 318424,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Blok 65, 318.424€, 85m²"
+    "title": "Trosoban stan na prodaju, Blok 65, 318.424€, 85m²",
+    "total_floors": 9
   },
   "https://www.4zida.rs/prodaja-stanova/blok-65-novi-beograd-beograd/trosoban-stan/69a2c3cfb6b06a65e50b25d7": {
     "area_m2": 84.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 9 Đorđa Stanojevića Blok 65, Novi Beograd, Beograd 319.200 € 3.800 €/m² 84m² 3 sobe 2. sprat Prazno Garaža Agencija Ažurirano 01.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, Blok 65, 84 m2, na 2. spratu, ima lift. Stanje - Novo, Centralno, ima terasu. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -858,7 +925,8 @@
     "price_eur": 319200,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Đorđa Stanojevića, 319.200€, 84m²"
+    "title": "Trosoban stan na prodaju, Đorđa Stanojevića, 319.200€, 84m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-70-novi-beograd-beograd/troiposoban-stan/69ba7f15a63618a91206ee84": {
     "area_m2": 95.0,
@@ -875,6 +943,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-70-novi-beograd-beograd/trosoban-stan/6a6ccf17976257c908043f8a": {
     "area_m2": 74.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 19 Jurija Gagarina Blok 70, Novi Beograd, Beograd 320.000 € 4.324 €/m² 74m² 3 sobe 4/4 sprata Uknjiženo Useljivo Agencija Ažurirano 03.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, uknjižen, Blok 70, 74 m2, na 4. spratu. Centralno.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -885,10 +954,12 @@
     "price_eur": 320000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Jurija Gagarina, 320.000€, 74m²"
+    "title": "Trosoban stan na prodaju, Jurija Gagarina, 320.000€, 74m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-71-novi-beograd-beograd/dvoiposoban-stan/6a5a3d83d794e573af058cf3": {
     "area_m2": 76.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 18 Dr Ivana Ribara Blok 71, Novi Beograd, Beograd 237.000 € 3.118 €/m² 76m² 2.5 sobe Prazno Parking Uknjiženo Agencija Ažurirano 02.09.2026.",
     "description": "Dvoiposoban stan za prodaju, uknjižen, Blok 71, 76 m2, na visokom prizemlju, ima lift. Stanje - Uobičajeno, Centralno, ima terasu, ima kupatilo. Ima parking mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -899,10 +970,12 @@
     "price_eur": 237000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Dr Ivana Ribara, 237.000€, 76m²"
+    "title": "Dvoiposoban stan na prodaju, Dr Ivana Ribara, 237.000€, 76m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/blok-71-novi-beograd-beograd/troiposoban-stan/69cd376eb21f4d74ef062b3d": {
     "area_m2": 86.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 20 Dr Ivana Ribara Blok 71, Novi Beograd, Beograd 265.000 € 3.081 €/m² 86m² 3.5 sobe 2/6 spratova Polunamešteno Uknjiženo Useljivo Agencija Ažurirano 29.08.2026.",
     "description": "Troiposoban stan za prodaju, uknjižen, Blok 71, 86 m2, na 2. spratu, ima lift. Stanje - Uobičajeno, Centralno, ima terasu, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": 2,
@@ -913,7 +986,8 @@
     "price_eur": 265000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Dr Ivana Ribara, 265.000€, 86m²"
+    "title": "Troiposoban stan na prodaju, Dr Ivana Ribara, 265.000€, 86m²",
+    "total_floors": 6
   },
   "https://www.4zida.rs/prodaja-stanova/blok-71-novi-beograd-beograd/troiposoban-stan/69e6575b8ee625f6690cd17b": {
     "area_m2": 103.0,
@@ -943,6 +1017,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/blok-71-novi-beograd-beograd/troiposoban-stan/6a952aeded0e0ce5200b6772": {
     "area_m2": 93.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 20 Dr Ivana Ribara Blok 71, Novi Beograd, Beograd 268.000 € 2.882 €/m² 93m² 3.5 sobe 4/6 spratova Namešteno Parking Uknjiženo Agencija Ažurirano 31.08.2026.",
     "description": "Troiposoban stan za prodaju, uknjižen, Blok 71, 93 m2, na 4. spratu, ima lift. Centralno, ima lođu, ima kupatilo. Ima parking mesto.",
     "first_seen": "2026-09-03",
     "floor": 4,
@@ -953,7 +1028,8 @@
     "price_eur": 268000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Dr Ivana Ribara, 268.000€, 93m²"
+    "title": "Troiposoban stan na prodaju, Dr Ivana Ribara, 268.000€, 93m²",
+    "total_floors": 6
   },
   "https://www.4zida.rs/prodaja-stanova/blok-72-novi-beograd-beograd/cetvorosoban-stan/6a47c480b9320eef090df00e": {
     "area_m2": 95.0,
@@ -996,6 +1072,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/dr-ivan-ribar-novi-beograd-beograd/troiposoban-stan/6a2689826a1f6b42580d9e29": {
     "area_m2": 95.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 10 Dr Ivan Ribar Novi Beograd, Beograd 315.000 € 3.316 €/m² 95m² 3.5 sobe 4/7 spratova Agencija Ažurirano 07.08.2026.",
     "description": "Troiposoban stan u zgradi za prodaju, Dr Ivan Ribar, 95 m2, na 4. spratu, ima lift. Stanje - održavano, ima lođu.",
     "first_seen": "2026-09-03",
     "floor": 4,
@@ -1006,10 +1083,12 @@
     "price_eur": 315000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Dr Ivan Ribar, 315.000€, 95m²"
+    "title": "Troiposoban stan na prodaju, Dr Ivan Ribar, 315.000€, 95m²",
+    "total_floors": 7
   },
   "https://www.4zida.rs/prodaja-stanova/hotel-yu-novi-beograd-beograd/dvoiposoban-stan/69fa0113165fbaea240c9574": {
     "area_m2": 76.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 14 Bulevar Nikole Tesle Hotel YU, Novi Beograd, Beograd 274.000 € 3.605 €/m² 76m² 2.5 sobe 3/4 sprata Prazno Uknjiženo Agencija Ažurirano 02.09.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, uknjižen, Hotel YU, 76 m2, na 3. spratu. Stanje - Uobičajeno, Centralno, ima lođu.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1020,10 +1099,12 @@
     "price_eur": 274000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Bulevar Nikole Tesle, 274.000€, 76m²"
+    "title": "Dvoiposoban stan na prodaju, Bulevar Nikole Tesle, 274.000€, 76m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/hotel-yu-novi-beograd-beograd/trosoban-stan/6a4cef7258d142a92c0dbebc": {
     "area_m2": 82.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 20 Aleksinačkih rudara Hotel YU, Novi Beograd, Beograd 350.000 € 4.268 €/m² MOŽE NA KREDIT 82m² 3 sobe 3/5 spratova Prazno Uknjiženo Agencija Ažurirano 02.09.2026.",
     "description": "Trosoban stan u zgradi za prodaju, uknjižen, Hotel YU, 82 m2, na 3. spratu, ima lift. Centralno, ima terasu.",
     "first_seen": "2026-09-03",
     "floor": 3,
@@ -1034,7 +1115,8 @@
     "price_eur": 350000,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Aleksinačkih rudara, 350.000€, 82m²"
+    "title": "Trosoban stan na prodaju, Aleksinačkih rudara, 350.000€, 82m²",
+    "total_floors": 5
   },
   "https://www.4zida.rs/prodaja-stanova/hotel-yu-novi-beograd-beograd/trosoban-stan/6a730c2b61c97281eb045f30": {
     "first_seen": "2026-09-03",
@@ -1044,6 +1126,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/dvoiposoban-stan/6882234dee4c41327c075ff5": {
     "area_m2": 72.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 24 Tuluz-Lotreka 22 Ledine, Novi Beograd, Beograd 159.000 € 2.208 €/m² 72m² 2.5 sobe 3/3 sprata Polunamešteno U procesu uknjižavanja Vlasnik Ažurirano 31.08.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, u procesu uknjižavanja, Ledine, 72 m2, na 3. spratu. Stanje - Novo, Etažno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1054,7 +1137,8 @@
     "price_eur": 159000,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Tuluz-Lotreka 22, 159.000€, 72m²"
+    "title": "Dvoiposoban stan na prodaju, Tuluz-Lotreka 22, 159.000€, 72m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/troiposoban-stan/683f04235628463f9406fec4": {
     "area_m2": 71.0,
@@ -1071,6 +1155,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/troiposoban-stan/68c41cc69ae9c198210c3323": {
     "area_m2": 85.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 9 Puškinova Ledine, Novi Beograd, Beograd 191.000 € 2.247 €/m² 85m² 3.5 sobe 1/2 sprata Nije uknjiženo Useljivo Agencija Ažurirano 08.08.2026.",
     "description": "Troiposoban stan za prodaju, nije uknjižen, Ledine, 85 m2, na 1. spratu. Stanje - U izgradnji, Etažno, ima terasu.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1081,10 +1166,12 @@
     "price_eur": 191000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Puškinova, 191.000€, 85m²"
+    "title": "Troiposoban stan na prodaju, Puškinova, 191.000€, 85m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/troiposoban-stan/68c41cc79ae9c198210c3326": {
     "area_m2": 80.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 9 Puškinova Ledine, Novi Beograd, Beograd 179.000 € 2.238 €/m² 80m² 3.5 sobe 1/2 sprata Nije uknjiženo Useljivo Agencija Ažurirano 08.08.2026.",
     "description": "Troiposoban stan za prodaju, nije uknjižen, Ledine, 80 m2, na 1. spratu. Stanje - U izgradnji, Etažno, ima terasu.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1095,10 +1182,12 @@
     "price_eur": 179000,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Puškinova, 179.000€, 80m²"
+    "title": "Troiposoban stan na prodaju, Puškinova, 179.000€, 80m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/troiposoban-stan/6a75aecc23ad5134130c4498": {
     "area_m2": 76.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 4 Ledine Novi Beograd, Beograd 193.190 € 2.542 €/m² 76m² 3.5 sobe 3/3 sprata Prazno Agencija Ažurirano 31.08.2026.",
     "description": "Troiposoban stan za prodaju, Ledine, 76 m2, na 3. spratu, ima lift. Etažno, ima lođu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1109,7 +1198,8 @@
     "price_eur": 193190,
     "rooms": 3.5,
     "source": "4zida.rs",
-    "title": "Troiposoban stan na prodaju, Ledine, 193.190€, 76m²"
+    "title": "Troiposoban stan na prodaju, Ledine, 193.190€, 76m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/trosoban-stan/69a981ef834ca44d040aa059": {
     "first_seen": "2026-09-03",
@@ -1119,6 +1209,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/trosoban-stan/6a75d8bf3db3b8f445018427": {
     "area_m2": 73.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 4 Ledine Novi Beograd, Beograd 187.930 € 2.574 €/m² 73m² 3 sobe 3/3 sprata Prazno Agencija Ažurirano 31.08.2026.",
     "description": "Trosoban stan za prodaju, Ledine, 73 m2, na 3. spratu, ima lift. Etažno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1129,10 +1220,12 @@
     "price_eur": 187930,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Ledine, 187.930€, 73m²"
+    "title": "Trosoban stan na prodaju, Ledine, 187.930€, 73m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/trosoban-stan/6a75d8c03db3b8f445018430": {
     "area_m2": 74.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 4 Ledine Novi Beograd, Beograd 186.210 € 2.516 €/m² 74m² 3 sobe 3/3 sprata Prazno Agencija Ažurirano 31.08.2026.",
     "description": "Trosoban stan za prodaju, Ledine, 74 m2, na 3. spratu, ima lift. Etažno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1143,7 +1236,8 @@
     "price_eur": 186210,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Ledine, 186.210€, 74m²"
+    "title": "Trosoban stan na prodaju, Ledine, 186.210€, 74m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/paviljoni-novi-beograd-beograd/trosoban-stan/6a201baa9c85e6ae9e098f1d": {
     "first_seen": "2026-09-03",
@@ -1179,6 +1273,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/stara-bezanija-novi-beograd-beograd/cetvorosoban-stan/69ee3c1d2629f37e99002dee": {
     "area_m2": 88.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 3 Ljubinke Bobić Stara Bežanija, Novi Beograd, Beograd 325.600 € 3.700 €/m² 88m² 4 sobe 3/4 sprata Prazno Agencija Ažurirano 24.08.2026.",
     "description": "Četvorosoban stan za prodaju, Stara Bežanija, 88 m2, na 3. spratu, ima lift. Stanje - Novo, Podno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1189,10 +1284,12 @@
     "price_eur": 325600,
     "rooms": 4.0,
     "source": "4zida.rs",
-    "title": "Četvorosoban stan na prodaju, Ljubinke Bobić, 325.600€, 88m²"
+    "title": "Četvorosoban stan na prodaju, Ljubinke Bobić, 325.600€, 88m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/stara-bezanija-novi-beograd-beograd/dvoiposoban-stan/6a9741f24649907b2f08d81f": {
     "area_m2": 83.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 5 Vinogradska 36 Stara Bežanija, Novi Beograd, Beograd 256.040 € 3.085 €/m² MOŽE NA KREDIT 83m² 2.5 sobe 2/5 spratova Polunamešteno Uknjiženo Agencija Ažurirano 01.09.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, uknjižen, Stara Bežanija, 83 m2, na 2. spratu, ima lift. Stanje - U izgradnji, Podno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-03",
     "floor": 2,
@@ -1203,10 +1300,12 @@
     "price_eur": 256040,
     "rooms": 2.5,
     "source": "4zida.rs",
-    "title": "Dvoiposoban stan na prodaju, Vinogradska 36, 256.040€, 83m²"
+    "title": "Dvoiposoban stan na prodaju, Vinogradska 36, 256.040€, 83m²",
+    "total_floors": 5
   },
   "https://www.4zida.rs/prodaja-stanova/tosin-bunar-novi-beograd-beograd/cetvorosoban-stan/6896210e51718832740e3416": {
     "area_m2": 84.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 4 Tošin bunar Tošin Bunar, Novi Beograd, Beograd 336.937 € 4.011 €/m² 84m² 4 sobe 14/22 sprata Prazno Garaža Agencija Ažurirano 02.09.2026.",
     "description": "Četvorosoban stan za prodaju, Tošin Bunar, 84 m2, na 14. spratu, ima lift. Etažno, ima terasu, ima kupatilo. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1217,10 +1316,12 @@
     "price_eur": 336937,
     "rooms": 4.0,
     "source": "4zida.rs",
-    "title": "Četvorosoban stan na prodaju, Tošin bunar, 336.937€, 84m²"
+    "title": "Četvorosoban stan na prodaju, Tošin bunar, 336.937€, 84m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/tosin-bunar-novi-beograd-beograd/cetvorosoban-stan/6a676f4151b1a8f8390606be": {
     "area_m2": 84.0,
+    "context": "1 Tošin Bunar Novi Beograd, Beograd 331.388 € 3.945 €/m² 84m² 4 sobe 20/22 sprata Agencija Ažurirano 26.08.2026.",
     "description": "Četvorosoban stan za prodaju, Tošin Bunar, 84 m2, na 20. spratu. Stanje - Novo, ima kupatilo, ima toalet.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1231,10 +1332,12 @@
     "price_eur": 331388,
     "rooms": 4.0,
     "source": "4zida.rs",
-    "title": "Četvorosoban stan na prodaju, Tošin Bunar, 331.388€, 84m²"
+    "title": "Četvorosoban stan na prodaju, Tošin Bunar, 331.388€, 84m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/tosin-bunar-novi-beograd-beograd/cetvorosoban-stan/6a6c59049074f7e0b80f8bb8": {
     "area_m2": 84.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide Premijum 14 Tošin bunar Tošin Bunar, Novi Beograd, Beograd 347.119 € 4.132 €/m² 84m² 4 sobe 14/22 sprata Garaža Agencija Ažurirano 30.08.2026.",
     "description": "Četvorosoban stan za prodaju, Tošin Bunar, 84 m2, na 14. spratu, ima lift. Centralno, ima terasu, ima kupatilo. Ima garažno mesto.",
     "first_seen": "2026-09-03",
     "floor": null,
@@ -1245,10 +1348,12 @@
     "price_eur": 347119,
     "rooms": 4.0,
     "source": "4zida.rs",
-    "title": "Četvorosoban stan na prodaju, Tošin bunar, 347.119€, 84m²"
+    "title": "Četvorosoban stan na prodaju, Tošin bunar, 347.119€, 84m²",
+    "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/tosin-bunar-novi-beograd-beograd/trosoban-stan/6a673e78eaff11c1a602d624": {
     "area_m2": 76.0,
+    "context": "1 Tošin Bunar Novi Beograd, Beograd 275.663 € 3.627 €/m² 76m² 3 sobe 6/10 spratova Agencija Ažurirano 03.09.2026.",
     "description": "Trosoban stan za prodaju, Tošin Bunar, 76 m2, na 6. spratu. Stanje - Novo, ima kupatilo, ima toalet.",
     "first_seen": "2026-09-03",
     "floor": 6,
@@ -1259,7 +1364,8 @@
     "price_eur": 275663,
     "rooms": 3.0,
     "source": "4zida.rs",
-    "title": "Trosoban stan na prodaju, Tošin Bunar, 275.663€, 76m²"
+    "title": "Trosoban stan na prodaju, Tošin Bunar, 275.663€, 76m²",
+    "total_floors": 10
   },
   "https://www.halooglasi.com/nekretnine/prodaja-stanova/3-0-blok-21---kompletno-renoviran/5425647420810": {
     "area_m2": 76.0,
