@@ -148,6 +148,20 @@ def normalize(text: str) -> str:
 
 SESSION = requests.Session()
 
+# Zašto je koji sajt pao: {"www.halooglasi.com": {"HTTP 403": 12}}. Ide u mejl,
+# da se ne mora kopati po logovima GitHub Actions-a.
+FETCH_PROBLEMS: dict[str, dict[str, int]] = {}
+
+
+def note_problem(url: str, reason: str) -> None:
+    host = url.split("/")[2] if "//" in url else url
+    FETCH_PROBLEMS.setdefault(host, {})
+    FETCH_PROBLEMS[host][reason] = FETCH_PROBLEMS[host].get(reason, 0) + 1
+
+
+def http_client_name() -> str:
+    return "curl_cffi (Chrome TLS)" if impersonate_get else "requests (obican TLS)"
+
 
 def _get(url: str):
     """Halo Oglasi odbija zahteve sa servera (GitHub Actions) i kad zaglavlja
@@ -167,8 +181,10 @@ def fetch(url: str) -> Optional[BeautifulSoup]:
             resp = _get(url)
             if resp.status_code == 200:
                 return BeautifulSoup(resp.text, "html.parser")
+            note_problem(url, f"HTTP {resp.status_code}")
             print(f"  [!] {url} -> HTTP {resp.status_code} (pokušaj {attempt})")
         except Exception as e:  # curl_cffi ne deli izuzetke sa requests
+            note_problem(url, type(e).__name__)
             print(f"  [!] Greška pri učitavanju {url}: {e} (pokušaj {attempt})")
         if attempt < FETCH_RETRIES:
             time.sleep(REQUEST_DELAY_SECONDS * 3)
@@ -467,8 +483,15 @@ def build_email_body(new_listings: list[Listing], favorite_events: list[str],
     if dead_sources:
         lines += ["", "!" * 60,
                   f"UPOZORENJE: {', '.join(dead_sources)} nije vratio nijedan "
-                  f"oglas.", "Verovatno blokira zahteve ili je promenio izgled "
-                  "stranice — ovaj mejl je nepotpun.", "!" * 60]
+                  f"oglas.", "Ovaj mejl je nepotpun.", "",
+                  f"HTTP klijent: {http_client_name()}"]
+        for host, reasons in sorted(FETCH_PROBLEMS.items()):
+            detail = ", ".join(f"{r} x{n}" for r, n in sorted(reasons.items()))
+            lines.append(f"  {host}: {detail}")
+        if not FETCH_PROBLEMS:
+            lines.append("  Nijedan zahtev nije pao — sajt je verovatno "
+                         "promenio izgled stranice.")
+        lines.append("!" * 60)
 
     if favorite_events:
         lines += ["", "=" * 60, "PROMENE NA FAVORITIMA", "=" * 60]
@@ -565,6 +588,7 @@ def check_favorites(catalog: dict, favorites: list[str],
 
 
 def main():
+    print(f"HTTP klijent: {http_client_name()}")
     config = load_config()
     keywords = config["exclude_keywords"]
     blocked = set(config["blocked"])

@@ -156,6 +156,7 @@
 <div class="status" id="status"></div>
 
 <script>
+const VERSION = "2026-09-03e";  // vidi se u Podešavanjima; potvrda da nije keširana stara verzija
 const API = "https://api.github.com";
 const LS = { token: "sw_token", repo: "sw_repo" };
 
@@ -443,9 +444,9 @@ $("forget").onclick = () => {
 };
 
 $("repo").value = repo();
-$("tokenNote").textContent = token()
+$("tokenNote").textContent = (token()
   ? "Token je sačuvan u ovom pregledaču."
-  : "Token još nije unet.";
+  : "Token još nije unet.") + `  ·  Verzija aplikacije: ${VERSION}`;
 loadAll();
 </script>
 </body>
