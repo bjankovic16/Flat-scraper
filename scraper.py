@@ -78,6 +78,7 @@ REQUEST_HEADERS = {
 FETCH_RETRIES = 2  # blokade su često prolazne, pa vredi pokušati ponovo
 REQUEST_DELAY_SECONDS = 1.5  # pristojna pauza između zahteva
 MAX_CARD_TEXT_CHARS = 1500  # veći blok teksta od ovoga nije jedan oglas, nego lista
+CONTEXT_CHARS = 250  # koliko teksta kartice pamtimo za pretragu ključnih reči
 MAX_DETAIL_FETCHES = 150  # zaštita da prvo pokretanje ne traje unedogled
 MISSING_RUNS_BEFORE_ALERT = 3  # favorit se prijavljuje kao nestao tek posle N provera
 
@@ -93,6 +94,10 @@ class Listing:
     location: str
     floor: Optional[int] = None
     description: str = ""
+    # Pocetak teksta kartice iz rezultata pretrage: tu su adresa i naselje
+    # ('Beograd Opstina Novi Beograd Ledine Dusana Krstica'), kojih nema ni
+    # u naslovu ni u opisu, a po njima se cesto iskljucuje.
+    context: str = ""
 
     def key(self) -> str:
         return self.url
@@ -344,6 +349,7 @@ def scrape_halooglasi_category(category: str) -> list[Listing]:
             rooms = parse_rooms(text)
             floor = parse_floor(text)
             title = card_title(card, href)
+            context = text[:CONTEXT_CHARS]
 
             results.append(Listing(
                 source="Halo Oglasi",
@@ -353,6 +359,7 @@ def scrape_halooglasi_category(category: str) -> list[Listing]:
                 area_m2=area,
                 rooms=rooms,
                 floor=floor,
+                context=context,
                 location="Novi Beograd",
             ))
             found_on_page += 1
@@ -404,6 +411,7 @@ def scrape_4zida_category(category: str) -> list[Listing]:
             rooms = parse_rooms(text)
             floor = parse_floor(text)
             title = card_title(card, href)
+            context = text[:CONTEXT_CHARS]
 
             results.append(Listing(
                 source="4zida.rs",
@@ -413,6 +421,7 @@ def scrape_4zida_category(category: str) -> list[Listing]:
                 area_m2=area,
                 rooms=rooms,
                 floor=floor,
+                context=context,
                 location="Novi Beograd",
             ))
             found_on_page += 1
@@ -444,7 +453,8 @@ def load_config() -> dict:
 
 def excluded_by_keyword(listing: Listing, keywords: list[str]) -> Optional[str]:
     """Vrati ključnu reč zbog koje oglas ispada, ili None ako je oglas u redu."""
-    haystack = normalize(f"{listing.title} {listing.description}")
+    haystack = normalize(
+        f"{listing.title} {listing.description} {listing.context} {listing.url}")
     for word in keywords:
         needle = normalize(word).strip()
         if needle and needle in haystack:
@@ -714,6 +724,7 @@ def main():
             "source": listing.source,
             "title": listing.title or entry.get("title", ""),
             "description": listing.description or entry.get("description", ""),
+            "context": listing.context or entry.get("context", ""),
             "price_eur": listing.price_eur,
             "area_m2": listing.area_m2,
             "rooms": listing.rooms,

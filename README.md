@@ -79,10 +79,13 @@ završava u repozitorijumu.
 | Oglasi | Svi oglasi iz kataloga, pretraga po naslovu i opisu, ★ favorit / sakrij |
 | Favoriti | Oglasi koje pratiš — javljamo promenu cene i kad nestanu sa sajta |
 | Blokirani | Oglasi koje više ne želiš u mejlu (možeš ih vratiti nazad) |
-| Reči | Ključne reči — oglas ispada ako se reč nađe u naslovu **ili** opisu |
+| Reči | Ključne reči — oglas ispada ako se reč nađe u naslovu, opisu **ili adresi** |
 
 Ključne reči ne razlikuju velika/mala slova ni kvačice, i traže se kao deo reči:
 `prizemlj` hvata i „prizemlje" i „prizemlju". Koristi koren reči, ne ceo oblik.
+
+Pretražuje se i adresa oglasa, ne samo naslov i opis — zato `Ledine` ili
+`Ivana Ribara` izbacuju oglas i kad se ulica nigde ne pominje u naslovu.
 
 ## Pokretanje sa telefona
 Instaliraj GitHub aplikaciju → otvori repo → **Actions** → „Dnevna provera

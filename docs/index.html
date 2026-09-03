@@ -123,9 +123,10 @@
   <section id="tab-keywords" class="hidden">
     <div class="card">
       <h3>Isključi oglase koji sadrže reč</h3>
-      <div class="meta">Traži se i u naslovu i u opisu oglasa. Ne razlikuje velika/mala
-        slova ni kvačice. Koristi koren reči — <b>prizemlj</b> hvata i „prizemlje“
-        i „prizemlju“.</div>
+      <div class="meta">Traži se u naslovu, opisu i <b>adresi</b> oglasa — pa
+        „Ledine“ ili „Ivana Ribara“ hvataju oglas i kad se ulica ne pominje u
+        naslovu. Ne razlikuje velika/mala slova ni kvačice; koristi koren reči —
+        <b>prizemlj</b> hvata i „prizemlje“ i „prizemlju“.</div>
       <div class="row">
         <input type="text" id="kwInput" placeholder="npr. prizemlj" style="flex:1">
         <button class="primary" id="kwAdd">Dodaj</button>
@@ -156,7 +157,7 @@
 <div class="status" id="status"></div>
 
 <script>
-const VERSION = "2026-09-03f";  // vidi se u Podešavanjima; potvrda da nije keširana stara verzija
+const VERSION = "2026-09-03g";  // vidi se u Podešavanjima; potvrda da nije keširana stara verzija
 const API = "https://api.github.com";
 const LS = { token: "sw_token", repo: "sw_repo" };
 
@@ -187,8 +188,11 @@ function norm(text) {
     .normalize("NFKD").replace(/[̀-ͯ]/g, "");
 }
 
-function keywordHit(entry) {
-  const hay = norm(`${entry.title || ""} ${entry.description || ""}`);
+function keywordHit(entry, url) {
+  // Isti skup kao excluded_by_keyword() u scraper.py — naslov, opis, tekst
+  // kartice (tu je adresa i naselje) i URL.
+  const hay = norm(`${entry.title || ""} ${entry.description || ""} ` +
+                   `${entry.context || ""} ${url || ""}`);
   return cfg.exclude_keywords.find((w) => {
     const needle = norm(w).trim();
     return needle && hay.includes(needle);
@@ -316,7 +320,7 @@ function render() {
   // Oglasi preneti iz starog formata nemaju nijedan podatak osim URL-a.
   const real = all.filter((u) => catalog[u].price_eur && !cfg.blocked.includes(u));
   // Isto pravilo kao u mejlu — reč iz Reči sakriva oglas i ovde.
-  const shown = real.filter((u) => !keywordHit(catalog[u]));
+  const shown = real.filter((u) => !keywordHit(catalog[u], u));
 
   $("summary").textContent =
     `${shown.length} oglasa · ${cfg.favorites.length} favorita · ` +
