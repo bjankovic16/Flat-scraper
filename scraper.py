@@ -24,6 +24,11 @@ from typing import Optional
 import requests
 from bs4 import BeautifulSoup
 
+try:
+    from curl_cffi.requests import get as impersonate_get
+except ImportError:  # skripta radi i bez njega, samo slabije protiv blokada
+    impersonate_get = None
+
 # ----------------------------------------------------------------------------
 # CONFIG — ovde menjaš numeričke kriterijume pretrage
 # ----------------------------------------------------------------------------
@@ -144,14 +149,26 @@ def normalize(text: str) -> str:
 SESSION = requests.Session()
 
 
+def _get(url: str):
+    """Halo Oglasi odbija zahteve sa servera (GitHub Actions) i kad zaglavlja
+    izgledaju kao iz pregledača, jer prepoznaje TLS potpis Python biblioteke.
+    curl_cffi oponaša i Chrome-ov TLS handshake, pa prolazi; ako ga nema,
+    vraćamo se na requests (dovoljno je za 4zida i za lokalno pokretanje).
+    """
+    if impersonate_get is not None:
+        return impersonate_get(url, headers=REQUEST_HEADERS, timeout=25,
+                               impersonate="chrome")
+    return SESSION.get(url, headers=REQUEST_HEADERS, timeout=20)
+
+
 def fetch(url: str) -> Optional[BeautifulSoup]:
     for attempt in range(1, FETCH_RETRIES + 1):
         try:
-            resp = SESSION.get(url, headers=REQUEST_HEADERS, timeout=20)
+            resp = _get(url)
             if resp.status_code == 200:
                 return BeautifulSoup(resp.text, "html.parser")
             print(f"  [!] {url} -> HTTP {resp.status_code} (pokušaj {attempt})")
-        except requests.RequestException as e:
+        except Exception as e:  # curl_cffi ne deli izuzetke sa requests
             print(f"  [!] Greška pri učitavanju {url}: {e} (pokušaj {attempt})")
         if attempt < FETCH_RETRIES:
             time.sleep(REQUEST_DELAY_SECONDS * 3)
