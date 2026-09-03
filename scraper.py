@@ -51,6 +51,7 @@ REQUEST_HEADERS = {
     )
 }
 REQUEST_DELAY_SECONDS = 1.5  # pristojna pauza između zahteva
+MAX_CARD_TEXT_CHARS = 1500  # veći blok teksta od ovoga nije jedan oglas, nego lista
 
 
 @dataclass
@@ -84,11 +85,15 @@ def parse_price(text: str) -> Optional[int]:
 
 
 def parse_area(text: str) -> Optional[float]:
-    """'84 m2' ili '59,97 m2' ili '84m²' -> 84.0 / 59.97"""
-    m = re.search(r"([\d.,]+)\s*m[²2]", text.replace("\xa0", " "))
+    """'84 m2' / '59,97 m2' / '84m²' / '76 m 2' (<sup>2</sup>) -> 84.0 / 59.97 / 76.0"""
+    m = re.search(r"([\d.,]+)\s*m\s*[²2]", text.replace("\xa0", " "))
     if not m:
         return None
-    num = m.group(1).replace(".", "").replace(",", ".")
+    num = m.group(1).replace(",", ".").strip(".")
+    # Tačka je decimalna ('61.29m2' -> 61.29), osim kad razdvaja hiljade
+    # ('1.234 m2' -> 1234), što prepoznajemo po tačno tri cifre posle tačke.
+    if "." in num and len(num.rsplit(".", 1)[1]) == 3:
+        num = num.replace(".", "")
     try:
         return float(num)
     except ValueError:
@@ -117,6 +122,45 @@ def fetch(url: str) -> Optional[BeautifulSoup]:
     except requests.RequestException as e:
         print(f"  [!] Greška pri učitavanju {url}: {e}")
         return None
+
+
+def find_card(a):
+    """Vrati element koji predstavlja JEDAN oglas.
+
+    Link na oglas je često unutar slike, pa je njegov neposredni roditelj
+    prazan <div> bez cene. Penjemo se uz DOM do prvog elementa koji sadrži
+    cenu. Ako je taj element prevelik, oglas nema svoju cenu i naleteli smo na
+    kontejner sa više oglasa — vraćamo None da ne bismo tom oglasu pripisali
+    cenu suseda.
+    """
+    node = a
+    for _ in range(8):
+        node = node.parent
+        if node is None:
+            return None
+        text = node.get_text(" ", strip=True)
+        if "€" in text:
+            return node if len(text) <= MAX_CARD_TEXT_CHARS else None
+    return None
+
+
+def title_from_url(url: str) -> str:
+    """'.../trosoban-stan/6a0cda8118003131c808fa4f' -> 'Trosoban stan'"""
+    parts = [p for p in url.split("?")[0].split("/")
+             if p and not re.fullmatch(r"[0-9a-f]{6,}", p)]
+    slug = parts[-1] if parts else url
+    title = slug.replace("-", " ").strip()
+    return title[:1].upper() + title[1:]
+
+
+def card_title(card, url: str) -> str:
+    """Naslov iz naslovnog taga kartice; 4zida ga nema, pa pada na slug URL-a."""
+    heading = card.find(["h1", "h2", "h3", "h4"])
+    if heading:
+        text = heading.get_text(" ", strip=True)
+        if text:
+            return text
+    return title_from_url(url)
 
 
 # ----------------------------------------------------------------------------
@@ -152,12 +196,14 @@ def scrape_halooglasi_category(category: str) -> list[Listing]:
                 continue
             seen_hrefs_this_page.add(href)
 
-            card = a.find_parent(["article", "li", "div"]) or a
+            card = find_card(a)
+            if card is None:
+                continue
             text = card.get_text(" ", strip=True)
             price = parse_price(text)
             area = parse_area(text)
             rooms = parse_rooms(text)
-            title = a.get_text(strip=True) or text[:80]
+            title = card_title(card, href)
 
             results.append(Listing(
                 source="Halo Oglasi",
@@ -208,12 +254,14 @@ def scrape_4zida_category(category: str) -> list[Listing]:
                 continue
             seen_hrefs_this_page.add(href)
 
-            card = a.find_parent(["li", "div", "article"]) or a
+            card = find_card(a)
+            if card is None:
+                continue
             text = card.get_text(" ", strip=True)
             price = parse_price(text)
             area = parse_area(text)
             rooms = parse_rooms(text)
-            title = a.get_text(strip=True) or text[:80]
+            title = card_title(card, href)
 
             results.append(Listing(
                 source="4zida.rs",
@@ -260,9 +308,10 @@ def save_seen(seen: set[str]) -> None:
 
 
 def build_email_body(new_listings: list[Listing]) -> str:
+    max_price = f"{MAX_PRICE_EUR:,}".replace(",", ".")
     lines = [
-        f"Novi oglasi za stanove — Novi Beograd, do {MAX_PRICE_EUR:,} €, "
-        f"70m2+, 2 sobe ili više\n".replace(",", "."),
+        f"Novi oglasi za stanove — Novi Beograd, do {max_price} €, "
+        f"{MIN_AREA_M2}m2+, {MIN_ROOMS:g} sobe ili više\n",
         f"Pronađeno: {len(new_listings)} novih oglasa\n",
         "=" * 60,
     ]
@@ -279,7 +328,7 @@ def build_email_body(new_listings: list[Listing]) -> str:
 def send_email(subject: str, body: str) -> None:
     email_user = os.environ["EMAIL_USER"]
     email_pass = os.environ["EMAIL_PASS"]
-    email_to = os.environ.get("EMAIL_TO", email_user)
+    email_to = os.environ.get("EMAIL_TO") or email_user
 
     msg = MIMEMultipart()
     msg["From"] = email_user
