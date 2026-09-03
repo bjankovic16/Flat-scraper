@@ -57,8 +57,18 @@ REQUEST_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-    )
+    ),
+    # Bez ovih zaglavlja Halo Oglasi odbija zahteve sa GitHub Actions IP adresa.
+    "Accept": ("text/html,application/xhtml+xml,application/xml;q=0.9,"
+               "image/avif,image/webp,*/*;q=0.8"),
+    "Accept-Language": "sr-RS,sr;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
 }
+FETCH_RETRIES = 2  # blokade su često prolazne, pa vredi pokušati ponovo
 REQUEST_DELAY_SECONDS = 1.5  # pristojna pauza između zahteva
 MAX_CARD_TEXT_CHARS = 1500  # veći blok teksta od ovoga nije jedan oglas, nego lista
 MAX_DETAIL_FETCHES = 150  # zaštita da prvo pokretanje ne traje unedogled
@@ -131,16 +141,21 @@ def normalize(text: str) -> str:
     return "".join(c for c in decomposed if not unicodedata.combining(c))
 
 
+SESSION = requests.Session()
+
+
 def fetch(url: str) -> Optional[BeautifulSoup]:
-    try:
-        resp = requests.get(url, headers=REQUEST_HEADERS, timeout=20)
-        if resp.status_code != 200:
-            print(f"  [!] {url} -> HTTP {resp.status_code}")
-            return None
-        return BeautifulSoup(resp.text, "html.parser")
-    except requests.RequestException as e:
-        print(f"  [!] Greška pri učitavanju {url}: {e}")
-        return None
+    for attempt in range(1, FETCH_RETRIES + 1):
+        try:
+            resp = SESSION.get(url, headers=REQUEST_HEADERS, timeout=20)
+            if resp.status_code == 200:
+                return BeautifulSoup(resp.text, "html.parser")
+            print(f"  [!] {url} -> HTTP {resp.status_code} (pokušaj {attempt})")
+        except requests.RequestException as e:
+            print(f"  [!] Greška pri učitavanju {url}: {e} (pokušaj {attempt})")
+        if attempt < FETCH_RETRIES:
+            time.sleep(REQUEST_DELAY_SECONDS * 3)
+    return None
 
 
 def find_card(a):
@@ -424,7 +439,7 @@ def format_listing(listing: Listing) -> list[str]:
 
 
 def build_email_body(new_listings: list[Listing], favorite_events: list[str],
-                     keywords: list[str]) -> str:
+                     keywords: list[str], dead_sources: list[str]) -> str:
     max_price = f"{MAX_PRICE_EUR:,}".replace(",", ".")
     lines = [
         f"Novi Beograd — do {max_price} €, {MIN_AREA_M2}m2+, "
@@ -432,6 +447,11 @@ def build_email_body(new_listings: list[Listing], favorite_events: list[str],
     ]
     if keywords:
         lines.append(f"Isključene ključne reči: {', '.join(keywords)}")
+    if dead_sources:
+        lines += ["", "!" * 60,
+                  f"UPOZORENJE: {', '.join(dead_sources)} nije vratio nijedan "
+                  f"oglas.", "Verovatno blokira zahteve ili je promenio izgled "
+                  "stranice — ovaj mejl je nepotpun.", "!" * 60]
 
     if favorite_events:
         lines += ["", "=" * 60, "PROMENE NA FAVORITIMA", "=" * 60]
@@ -466,19 +486,33 @@ def send_email(subject: str, body: str) -> None:
 # Main
 # ----------------------------------------------------------------------------
 
-def collect_listings() -> list[Listing]:
+def collect_listings() -> tuple[list[Listing], list[str]]:
+    """Vrati sve oglase i spisak sajtova koji nisu vratili nijedan oglas.
+
+    Sajt koji vrati nulu je skoro uvek blokada ili promena stranice, a ne
+    stvarno prazan rezultat — to mora da se vidi, a ne da tiho prođe.
+    """
     all_listings: list[Listing] = []
+    dead_sources: list[str] = []
 
     print("== Halo Oglasi ==")
-    for cat in HALOOGLASI_CATEGORIES:
-        all_listings.extend(scrape_halooglasi_category(cat))
+    halo = [l for cat in HALOOGLASI_CATEGORIES
+            for l in scrape_halooglasi_category(cat)]
+    all_listings.extend(halo)
 
     print("== 4zida.rs ==")
-    for cat in ZIDA_CATEGORIES:
-        all_listings.extend(scrape_4zida_category(cat))
+    zida = [l for cat in ZIDA_CATEGORIES for l in scrape_4zida_category(cat)]
+    all_listings.extend(zida)
+
+    for name, found in (("Halo Oglasi", len(halo)), ("4zida.rs", len(zida))):
+        print(f"  {name}: {found} oglasa")
+        if found == 0:
+            dead_sources.append(name)
 
     print(f"\nUkupno pronađeno (pre filtera i dedup.): {len(all_listings)}")
-    return all_listings
+    if dead_sources:
+        print(f"[!] UPOZORENJE: nijedan oglas sa: {', '.join(dead_sources)}")
+    return all_listings, dead_sources
 
 
 def check_favorites(catalog: dict, favorites: list[str],
@@ -525,7 +559,8 @@ def main():
     catalog = migrate_legacy_seen(load_catalog(), today)
 
     # Dedup po URL-u (isti oglas se pojavljuje u više kategorija/strana)
-    unique = {l.key(): l for l in collect_listings()}
+    listings, dead_sources = collect_listings()
+    unique = {l.key(): l for l in listings}
     filtered = {url: l for url, l in unique.items() if passes_filters(l)}
     print(f"Prošlo numeričke filtere: {len(filtered)}")
 
@@ -585,17 +620,19 @@ def main():
         catalog[listing.url]["notified"] = True
     save_catalog(catalog)
 
-    if not new_listings and not favorite_events:
+    if not new_listings and not favorite_events and not dead_sources:
         print("Nema novih oglasa ni promena na favoritima — mejl se ne šalje.")
         return
 
-    body = build_email_body(new_listings, favorite_events, keywords)
+    body = build_email_body(new_listings, favorite_events, keywords, dead_sources)
     bits = []
     if new_listings:
         bits.append(f"{len(new_listings)} novih")
     if favorite_events:
         bits.append(f"{len(favorite_events)} promena na favoritima")
-    subject = f"🏠 {', '.join(bits)} — Novi Beograd"
+    if dead_sources:
+        bits.append(f"GREŠKA: {', '.join(dead_sources)}")
+    subject = f"🏠 {', '.join(bits) or 'provera'} — Novi Beograd"
     send_email(subject, body)
     print(f"Mejl poslat: {subject}")
 
