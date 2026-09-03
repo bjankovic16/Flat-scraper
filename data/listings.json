@@ -877,10 +877,17 @@
     "title": "Troiposoban stan na prodaju, Dr Ivana Ribara, 265.000€, 86m²"
   },
   "https://www.4zida.rs/prodaja-stanova/blok-71-novi-beograd-beograd/troiposoban-stan/69e6575b8ee625f6690cd17b": {
+    "area_m2": 103.0,
+    "description": "Troiposoban stan u zgradi za prodaju, uknjižen, Blok 71, 103 m2, na 7. spratu, ima lift. Centralno, ima terasu.",
     "first_seen": "2026-09-03",
     "last_seen": "2026-09-03",
+    "location": "Novi Beograd",
     "missing_runs": 0,
-    "notified": true
+    "notified": true,
+    "price_eur": 338000,
+    "rooms": 3.5,
+    "source": "4zida.rs",
+    "title": "Troiposoban stan na prodaju, Dr Ivana Ribara, 338.000€, 103m²"
   },
   "https://www.4zida.rs/prodaja-stanova/blok-71-novi-beograd-beograd/troiposoban-stan/6a831d8d02af2c514d0d9a5a": {
     "area_m2": 97.0,
