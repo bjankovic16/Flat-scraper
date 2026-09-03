@@ -1,5 +1,7 @@
 {
-  "exclude_keywords": [],
+  "exclude_keywords": [
+    "Ivana Ribara"
+  ],
   "blocked": [],
   "favorites": []
 }
