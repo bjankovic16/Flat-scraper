@@ -1,0 +1,41 @@
+name: Dnevna provera stanova
+
+on:
+  schedule:
+    # 07:00 po srednjeevropskom vremenu (leti UTC+2 => 05:00 UTC, zimi UTC+1 => 06:00 UTC)
+    # GitHub cron je uvek u UTC, ovde je podešeno na 06:00 UTC što je 07-08h kod nas.
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}  # omogućava ručno pokretanje sa "Run workflow" dugmeta
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instaliraj zavisnosti
+        run: pip install -r requirements.txt
+
+      - name: Pokreni proveru
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: python scraper.py
+
+      - name: Sačuvaj listu viđenih oglasa nazad u repo
+        run: |
+          git config user.name "stan-watcher-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add seen_listings.json
+          git diff --staged --quiet || git commit -m "Ažuriranje liste viđenih oglasa [skip ci]"
+          git push
