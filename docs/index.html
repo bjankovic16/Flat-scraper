@@ -131,6 +131,7 @@
         <button class="primary" id="kwAdd">Dodaj</button>
       </div>
       <div class="chips" id="kwChips"></div>
+      <div class="note" id="kwHidden"></div>
     </div>
   </section>
 
@@ -177,6 +178,20 @@ function toast(msg, ms = 2200) {
 
 function money(v) {
   return v ? new Intl.NumberFormat("sr-RS").format(v) + " €" : "cena N/A";
+}
+
+// Ista pravila kao normalize() u scraper.py: mala slova, bez kvačica.
+function norm(text) {
+  return (text || "").toLowerCase().replace(/đ/g, "dj")
+    .normalize("NFKD").replace(/[̀-ͯ]/g, "");
+}
+
+function keywordHit(entry) {
+  const hay = norm(`${entry.title || ""} ${entry.description || ""}`);
+  return cfg.exclude_keywords.find((w) => {
+    const needle = norm(w).trim();
+    return needle && hay.includes(needle);
+  });
 }
 
 async function ghApi(path, options = {}) {
@@ -295,16 +310,19 @@ function renderList(target, urls, emptyMsg) {
 
 function render() {
   const all = Object.keys(catalog);
-  const real = all.filter((u) => catalog[u].price_eur).length;
+  // Oglasi preneti iz starog formata nemaju nijedan podatak osim URL-a.
+  const real = all.filter((u) => catalog[u].price_eur && !cfg.blocked.includes(u));
+  // Isto pravilo kao u mejlu — reč iz Reči sakriva oglas i ovde.
+  const shown = real.filter((u) => !keywordHit(catalog[u]));
+
   $("summary").textContent =
-    `${real} oglasa · ${cfg.favorites.length} favorita · ` +
+    `${shown.length} oglasa · ${cfg.favorites.length} favorita · ` +
     `${cfg.blocked.length} blokiranih · ${cfg.exclude_keywords.length} reči`;
+  $("kwHidden").textContent = cfg.exclude_keywords.length
+    ? `Trenutno sakriva ${real.length - shown.length} oglasa.` : "";
 
   const q = $("search").value.trim().toLowerCase();
-  const visible = all.filter((u) => {
-    if (cfg.blocked.includes(u)) return false;
-    // Oglasi preneti iz starog formata nemaju nijedan podatak osim URL-a.
-    if (!catalog[u].price_eur) return false;
+  const visible = shown.filter((u) => {
     if (!q) return true;
     const e = catalog[u];
     return `${e.title || ""} ${e.description || ""}`.toLowerCase().includes(q);
