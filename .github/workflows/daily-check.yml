@@ -46,8 +46,7 @@ jobs:
 
           # Veb aplikacija upisuje config.json u istu granu dok mi radimo, pa
           # push ume da bude odbijen. Rebase-ujemo i probamo ponovo; kod sudara
-          # na katalogu merodavan je onaj koji je skripta upravo napravila
-          # (-X theirs se u rebase-u odnosi na commit koji se primenjuje).
+          # na katalogu merodavan je onaj koji je skripta upravo napravila.
           for attempt in 1 2 3; do
             if git push origin "HEAD:${GITHUB_REF_NAME}"; then
               echo "Push uspeo iz pokušaja ${attempt}."
@@ -55,10 +54,15 @@ jobs:
             fi
             echo "Push odbijen — rebase pa ponovo (pokušaj ${attempt})."
             git fetch origin "${GITHUB_REF_NAME}"
-            git rebase -X theirs "origin/${GITHUB_REF_NAME}" || {
+            
+            if git rebase -X theirs "origin/${GITHUB_REF_NAME}"; then
+              echo "Rebase uspeo u pokušaju ${attempt}."
+            else
+              echo "Rebase failed, aborting..."
               git rebase --abort
               sleep 5
-            }
+              continue
+            fi
           done
           echo "Katalog nije sačuvan posle 3 pokušaja."
           exit 1
