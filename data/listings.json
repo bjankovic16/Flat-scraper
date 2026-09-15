@@ -639,6 +639,22 @@
     "title": "Trosoban stan na prodaju, Bulevar Milutina Milankovića, 350.000€, 80m²",
     "total_floors": 11
   },
+  "https://www.4zida.rs/prodaja-stanova/blok-24-novi-beograd-beograd/trosoban-stan/6a5a47e7494e1dbdd80eb00b": {
+    "area_m2": 84.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 17 Španskih boraca Blok 24, Novi Beograd, Beograd 324.000 € 3.857 €/m² 84m² 3 sobe 3/5 spratova Prazno Uknjiženo Useljivo Agencija Ažurirano 15.09.2026.",
+    "description": "Trosoban stan za prodaju, uknjižen, Blok 24, 84 m2, na 3. spratu, ima lift. Stanje - Uobičajeno, Centralno, ima terasu, ima lođu, ima kupatilo.",
+    "first_seen": "2026-09-15",
+    "floor": 3,
+    "last_seen": "2026-09-15",
+    "location": "Novi Beograd",
+    "missing_runs": 0,
+    "notified": true,
+    "price_eur": 324000,
+    "rooms": 3.0,
+    "source": "4zida.rs",
+    "title": "Trosoban stan na prodaju, Španskih boraca, 324.000€, 84m²",
+    "total_floors": 5
+  },
   "https://www.4zida.rs/prodaja-stanova/blok-25-arena-novi-beograd-beograd/dvoiposoban-stan/6a95b7f1246ba15fee008f2e": {
     "area_m2": 77.0,
     "context": "Pogledaj detaljnije Previous slide Next slide Top 15 Blok 25 - Arena Novi Beograd, Beograd 269.000 € 3.494 €/m² MOŽE NA KREDIT 77m² 2.5 sobe 2/6 spratova Prazno Uknjiženo Agencija Ažurirano 05.09.2026.",
@@ -1507,6 +1523,22 @@
     "title": "Dvosoban stan na prodaju, Omladinskih Brigada, 340.000€, 83m²",
     "total_floors": 7
   },
+  "https://www.4zida.rs/prodaja-stanova/blok-64-novi-beograd-beograd/trosoban-stan/6808f6c861db47de7e0279d5": {
+    "area_m2": 83.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 8 Blok 64 Novi Beograd, Beograd 335.000 € 4.036 €/m² 83m² 3 sobe 3/10 spratova Prazno Uknjiženo Agencija Ažurirano 15.09.2026.",
+    "description": "Trosoban stan u zgradi za prodaju, uknjižen, Blok 64, 83 m2, na 3. spratu, ima lift. Stanje - Novo, Centralno.",
+    "first_seen": "2026-09-15",
+    "floor": 3,
+    "last_seen": "2026-09-15",
+    "location": "Novi Beograd",
+    "missing_runs": 0,
+    "notified": true,
+    "price_eur": 335000,
+    "rooms": 3.0,
+    "source": "4zida.rs",
+    "title": "Trosoban stan na prodaju, Blok 64, 335.000€, 83m²",
+    "total_floors": 10
+  },
   "https://www.4zida.rs/prodaja-stanova/blok-64-novi-beograd-beograd/trosoban-stan/6a982e3eb2a6003fe90448e5": {
     "area_m2": 81.0,
     "context": "Pogledaj detaljnije Previous slide Next slide 15 Gandijeva Blok 64, Novi Beograd, Beograd 299.700 € 3.700 €/m² 81m² 3 sobe 4/5 spratova Uknjiženo Useljivo Agencija Ažurirano 02.09.2026.",
@@ -1875,7 +1907,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/dr-ivan-ribar-novi-beograd-beograd/dvoiposoban-stan/6a806e244ce6078f160eedcc": {
     "area_m2": 73.0,
-    "context": "Pogledaj detaljnije Previous slide Next slide 12 Dr Ivan Ribar Novi Beograd, Beograd 219.000 € 3.000 €/m² 73m² 2.5 sobe 6/7 spratova Namešteno Agencija Ažurirano 14.09.2026.",
+    "context": "Pogledaj detaljnije Previous slide Next slide 12 Dr Ivan Ribar Novi Beograd, Beograd 213.000 € 2.918 €/m² 73m² 2.5 sobe 6/7 spratova Namešteno Agencija Ažurirano 14.09.2026.",
     "description": "Dvoiposoban stan u zgradi za prodaju, Dr Ivan Ribar, 73 m2, na 6. spratu.",
     "first_seen": "2026-09-14",
     "floor": 6,
@@ -1883,7 +1915,7 @@
     "location": "Novi Beograd",
     "missing_runs": 0,
     "notified": true,
-    "price_eur": 219000,
+    "price_eur": 213000,
     "rooms": 2.5,
     "source": "4zida.rs",
     "title": "Dvoiposoban stan na prodaju, Dr Ivan Ribar, 219.000€, 73m²",
@@ -1987,7 +2019,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/hotel-yu-novi-beograd-beograd/trosoban-stan/6aa44631894804b5c20f9f9f": {
     "area_m2": 78.0,
-    "context": "Pogledaj detaljnije Previous slide Next slide 17 Aleksinačkih rudara Hotel YU, Novi Beograd, Beograd 310.000 € 3.974 €/m² 78m² 3 sobe 3/9 spratova Uknjiženo Useljivo Agencija Ažurirano 14.09.2026.",
+    "context": "Pogledaj detaljnije Previous slide Next slide 17 Aleksinačkih rudara Hotel YU, Novi Beograd, Beograd 310.000 € 3.974 €/m² 78m² 3 sobe 3/9 spratova Uknjiženo Useljivo Agencija Ažurirano 15.09.2026.",
     "description": "Trosoban stan za prodaju, uknjižen, Hotel YU, 78 m2, na 3. spratu, ima lift. Centralno, ima terasu, ima kupatilo, ima toalet.",
     "first_seen": "2026-09-12",
     "floor": 3,
@@ -2003,7 +2035,7 @@
   },
   "https://www.4zida.rs/prodaja-stanova/hotel-yu-novi-beograd-beograd/trosoban-stan/6aa7daff5d39cac5410cd694": {
     "area_m2": 74.0,
-    "context": "Pogledaj detaljnije Previous slide Next slide 16 Bulevar Maršala Tolbuhina Hotel YU, Novi Beograd, Beograd 279.500 € 3.777 €/m² 74m² 3 sobe 5/9 spratova Prazno Agencija Ažurirano 14.09.2026.",
+    "context": "Pogledaj detaljnije Previous slide Next slide Top 16 Bulevar Maršala Tolbuhina Hotel YU, Novi Beograd, Beograd 279.500 € 3.777 €/m² 74m² 3 sobe 5/9 spratova Prazno Agencija Ažurirano 15.09.2026.",
     "description": "Trosoban stan za prodaju, Hotel YU, 74 m2, na 5. spratu, ima lift. Stanje - Uobičajeno, Centralno, ima terasu, ima kupatilo.",
     "first_seen": "2026-09-14",
     "floor": 5,
@@ -2156,6 +2188,22 @@
     "rooms": 3.0,
     "source": "4zida.rs",
     "title": "Trosoban stan na prodaju, Ledine, 192.374€, 74m²",
+    "total_floors": null
+  },
+  "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/trosoban-stan/691dc4115ffca20ec70c085a": {
+    "area_m2": 89.0,
+    "context": "Pogledaj detaljnije Previous slide Next slide 5 Ledine Novi Beograd, Beograd 231.582 € 2.602 €/m² MOŽE NA KREDIT 89m² 3 sobe 4/4 sprata Prazno Parking Agencija Ažurirano 15.09.2026.",
+    "description": "Trosoban stan u zgradi za prodaju, Ledine, 89 m2, na 4. spratu, ima lift. Stanje - Novo, Etažno, ima terasu. Ima parking mesto.",
+    "first_seen": "2026-09-15",
+    "floor": null,
+    "last_seen": "2026-09-15",
+    "location": "Novi Beograd",
+    "missing_runs": 0,
+    "notified": false,
+    "price_eur": 231582,
+    "rooms": 3.0,
+    "source": "4zida.rs",
+    "title": "Trosoban stan na prodaju, Ledine, 231.582€, 89m²",
     "total_floors": null
   },
   "https://www.4zida.rs/prodaja-stanova/ledine-novi-beograd-beograd/trosoban-stan/69a981ef834ca44d040aa059": {
