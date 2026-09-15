@@ -61,10 +61,14 @@ CONFIG_FILE = ROOT / "config.json"          # piše ga veb aplikacija
 CATALOG_FILE = ROOT / "data" / "listings.json"  # piše ga ova skripta, čita veb aplikacija
 LEGACY_SEEN_FILE = ROOT / "seen_listings.json"  # format pre uvođenja kataloga
 
+# Verzija Chrome-a koju curl_cffi TLS/HTTP2 potpisom oponaša — mora se
+# poklapati sa Chrome verzijom iz User-Agent-a ispod, jer napredni WAF-ovi
+# (npr. Halo Oglasi) uporede TLS/JA3 potpis sa deklarisanim pregledačem.
+IMPERSONATE_TARGET = "chrome131"
 REQUEST_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+        "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
     ),
     # Bez ovih zaglavlja Halo Oglasi odbija zahteve sa GitHub Actions IP adresa.
     "Accept": ("text/html,application/xhtml+xml,application/xml;q=0.9,"
@@ -76,7 +80,7 @@ REQUEST_HEADERS = {
     "Sec-Fetch-Site": "none",
     "Sec-Fetch-User": "?1",
 }
-FETCH_RETRIES = 2  # blokade su često prolazne, pa vredi pokušati ponovo
+FETCH_RETRIES = 3  # blokade su često prolazne, pa vredi pokušati ponovo
 REQUEST_DELAY_SECONDS = 1.5  # pristojna pauza između zahteva
 MAX_CARD_TEXT_CHARS = 1500  # veći blok teksta od ovoga nije jedan oglas, nego lista
 CONTEXT_CHARS = 250  # koliko teksta kartice pamtimo za pretragu ključnih reči
@@ -216,7 +220,17 @@ def normalize(text: str) -> str:
     return "".join(c for c in decomposed if not unicodedata.combining(c))
 
 
+try:
+    from curl_cffi.requests import Session as ImpersonateSession
+except ImportError:
+    ImpersonateSession = None
+
+# Jedna sesija po domenu, ponovo iskorišćena za sve zahteve — čuva kolačiće
+# koje sajt (Cloudflare i sl. zaštita) postavi posle prvog uspešnog zahteva,
+# što je često neophodno da bi sledeći zahtevi prošli.
 SESSION = requests.Session()
+_IMPERSONATE_SESSIONS: dict[str, "ImpersonateSession"] = {}
+_WARMED_UP_HOSTS: set[str] = set()
 
 # Zašto je koji sajt pao: {"www.halooglasi.com": {"HTTP 403": 12}}. Ide u mejl,
 # da se ne mora kopati po logovima GitHub Actions-a.
@@ -233,16 +247,53 @@ def http_client_name() -> str:
     return "curl_cffi (Chrome TLS)" if impersonate_get else "requests (obican TLS)"
 
 
+def _host_of(url: str) -> str:
+    return url.split("/")[2] if "//" in url else url
+
+
+def _impersonate_session_for(host: str) -> "ImpersonateSession":
+    session = _IMPERSONATE_SESSIONS.get(host)
+    if session is None:
+        session = ImpersonateSession(impersonate=IMPERSONATE_TARGET)
+        _IMPERSONATE_SESSIONS[host] = session
+    return session
+
+
+def _warm_up(url: str) -> None:
+    """Prvi zahtev ka domenu je uvek na početnu stranu, da sesija dobije
+    kolačiće zaštite (npr. Cloudflare) pre nego što zatražimo pravu stranicu.
+    Bez ovoga čak i ispravan TLS potpis ume da dobije HTTP 403.
+    """
+    host = _host_of(url)
+    if host in _WARMED_UP_HOSTS:
+        return
+    _WARMED_UP_HOSTS.add(host)  # pokušaj samo jednom, i kad ne uspe
+    homepage = f"https://{host}/"
+    try:
+        headers = {**REQUEST_HEADERS, "Sec-Fetch-Site": "none"}
+        if impersonate_get is not None:
+            _impersonate_session_for(host).get(homepage, headers=headers, timeout=20)
+        else:
+            SESSION.get(homepage, headers=headers, timeout=15)
+        time.sleep(REQUEST_DELAY_SECONDS)
+    except Exception as e:
+        print(f"  [!] Zagrevanje sesije za {host} nije uspelo: {e}")
+
+
 def _get(url: str):
     """Halo Oglasi odbija zahteve sa servera (GitHub Actions) i kad zaglavlja
     izgledaju kao iz pregledača, jer prepoznaje TLS potpis Python biblioteke.
     curl_cffi oponaša i Chrome-ov TLS handshake, pa prolazi; ako ga nema,
     vraćamo se na requests (dovoljno je za 4zida i za lokalno pokretanje).
+    Koristimo sesiju (ne jednokratni get) da bi se kolačići sa zagrevanja
+    (i sa svakog sledećeg odgovora) preneli na naredne zahteve.
     """
+    _warm_up(url)
+    host = _host_of(url)
+    headers = {**REQUEST_HEADERS, "Referer": f"https://{host}/"}
     if impersonate_get is not None:
-        return impersonate_get(url, headers=REQUEST_HEADERS, timeout=25,
-                               impersonate="chrome")
-    return SESSION.get(url, headers=REQUEST_HEADERS, timeout=20)
+        return _impersonate_session_for(host).get(url, headers=headers, timeout=25)
+    return SESSION.get(url, headers=headers, timeout=20)
 
 
 def fetch(url: str) -> Optional[BeautifulSoup]:
