@@ -12,6 +12,7 @@ import json
 import os
 import re
 import smtplib
+import sys
 import time
 import unicodedata
 from dataclasses import dataclass
@@ -25,9 +26,9 @@ import requests
 from bs4 import BeautifulSoup
 
 try:
-    from curl_cffi.requests import get as impersonate_get
+    from curl_cffi.requests import Session as ImpersonateSession
 except ImportError:  # skripta radi i bez njega, samo slabije protiv blokada
-    impersonate_get = None
+    ImpersonateSession = None
 
 # ----------------------------------------------------------------------------
 # CONFIG — ovde menjaš numeričke kriterijume pretrage
@@ -36,8 +37,8 @@ except ImportError:  # skripta radi i bez njega, samo slabije protiv blokada
 MAX_PRICE_EUR = 350_000
 MIN_AREA_M2 = 70
 MIN_ROOMS = 2.0  # 2.0 = dvosoban i veći (2.5, 3.0, 3.5...)
-MIN_FLOOR = 2  # prizemlje (i visoko prizemlje) je 0, suteren -1
-MAX_FLOOR = 6
+MIN_FLOOR = 1  # prizemlje (i visoko prizemlje) je 0, suteren -1
+MAX_FLOOR = 5
 EXCLUDE_TOP_FLOOR = True  # izbaci stanove na poslednjem spratu zgrade
 
 # Kategorije (broj soba) koje pratimo na Halo Oglasi za Novi Beograd.
@@ -80,12 +81,30 @@ REQUEST_HEADERS = {
     "Sec-Fetch-Site": "none",
     "Sec-Fetch-User": "?1",
 }
-FETCH_RETRIES = 3  # blokade su često prolazne, pa vredi pokušati ponovo
+FETCH_RETRIES = 3  # ponavlja se samo ono što ume da prođe iz drugog puta
 REQUEST_DELAY_SECONDS = 1.5  # pristojna pauza između zahteva
+RETRY_BACKOFF_SECONDS = 4.5  # osnovna pauza pre ponovnog pokušaja, raste sa pokušajem
+MAX_DENIALS_PER_HOST = 3  # posle toliko odbijanja pristupa prestajemo da zovemo domen
+MAX_RETRY_AFTER_SECONDS = 60  # duže čekanje ne staje u jedno pokretanje
+HOST_WAIT_BUDGET_SECONDS = 120  # ukupno vreme čekanja po domenu u jednom pokretanju
+
+# HTTP statusi po značenju: odbijen pristup se ne rešava ponavljanjem, trajne
+# greške nikako, a ograničenje brzine i privremeni kvarovi imaju smisla kasnije.
+DENIAL_STATUSES = {401, 403, 407, 451}
+RATE_LIMIT_STATUSES = {429, 503}
+PERMANENT_STATUSES = {400, 404, 405, 410, 414, 501}
 MAX_CARD_TEXT_CHARS = 1500  # veći blok teksta od ovoga nije jedan oglas, nego lista
 CONTEXT_CHARS = 250  # koliko teksta kartice pamtimo za pretragu ključnih reči
 MAX_DETAIL_FETCHES = 150  # zaštita da prvo pokretanje ne traje unedogled
 MISSING_RUNS_BEFORE_ALERT = 3  # favorit se prijavljuje kao nestao tek posle N provera
+
+# Izvori koje pratimo i kako se zovu u izveštaju/mejlu.
+SOURCE_NAMES = ("Halo Oglasi", "4zida.rs")
+STATUS_LABELS = {
+    "complete": "potpuna (svi izvori odgovorili)",
+    "partial": "NEPOTPUNA (deo izvora nije odgovorio)",
+    "failed": "NEUSPELA (nijedan izvor nije odgovorio)",
+}
 
 
 @dataclass
@@ -220,11 +239,6 @@ def normalize(text: str) -> str:
     return "".join(c for c in decomposed if not unicodedata.combining(c))
 
 
-try:
-    from curl_cffi.requests import Session as ImpersonateSession
-except ImportError:
-    ImpersonateSession = None
-
 # Jedna sesija po domenu, ponovo iskorišćena za sve zahteve — čuva kolačiće
 # koje sajt (Cloudflare i sl. zaštita) postavi posle prvog uspešnog zahteva,
 # što je često neophodno da bi sledeći zahtevi prošli.
@@ -236,19 +250,77 @@ _WARMED_UP_HOSTS: set[str] = set()
 # da se ne mora kopati po logovima GitHub Actions-a.
 FETCH_PROBLEMS: dict[str, dict[str, int]] = {}
 
+# Domeni od kojih smo odustali u ovom pokretanju i zašto ({host: razlog}).
+# Kad zaštita odbije pristup, ponavljanje istog zahteva daje isti odgovor, pa
+# domen preskačemo do kraja pokretanja — ostali izvori rade normalno dalje.
+GIVEN_UP_HOSTS: dict[str, str] = {}
+_HOST_DENIALS: dict[str, int] = {}
+_HOST_WAITED: dict[str, float] = {}
+
+
+def reset_fetch_state() -> None:
+    """Čisto stanje mrežnog sloja za jedno pokretanje (koriste i testovi)."""
+    FETCH_PROBLEMS.clear()
+    GIVEN_UP_HOSTS.clear()
+    _HOST_DENIALS.clear()
+    _HOST_WAITED.clear()
+    _WARMED_UP_HOSTS.clear()
+
+
+def _host_of(url: str) -> str:
+    return url.split("/")[2] if "//" in url else url
+
 
 def note_problem(url: str, reason: str) -> None:
-    host = url.split("/")[2] if "//" in url else url
+    host = _host_of(url)
     FETCH_PROBLEMS.setdefault(host, {})
     FETCH_PROBLEMS[host][reason] = FETCH_PROBLEMS[host].get(reason, 0) + 1
 
 
 def http_client_name() -> str:
-    return "curl_cffi (Chrome TLS)" if impersonate_get else "requests (obican TLS)"
+    return ("curl_cffi (Chrome TLS)" if ImpersonateSession is not None
+            else "requests (obican TLS)")
 
 
-def _host_of(url: str) -> str:
-    return url.split("/")[2] if "//" in url else url
+def give_up_on_host(host: str, reason: str) -> None:
+    if host not in GIVEN_UP_HOSTS:
+        GIVEN_UP_HOSTS[host] = reason
+        print(f"  [!] Odustajem od {host} u ovom pokretanju: {reason}")
+
+
+def note_denial(host: str, reason: str) -> bool:
+    """Prebroj odbijanje pristupa; vrati True ako smo zbog toga odustali."""
+    _HOST_DENIALS[host] = _HOST_DENIALS.get(host, 0) + 1
+    if _HOST_DENIALS[host] >= MAX_DENIALS_PER_HOST:
+        give_up_on_host(host, f"{reason} x{_HOST_DENIALS[host]} — odbijen pristup")
+        return True
+    return False
+
+
+def _wait_within_budget(host: str, seconds: float) -> bool:
+    """Sačekaj traženo vreme ako staje u budžet pokretanja.
+
+    Vrati False kad je traženo čekanje duže od onoga što jedno pokretanje sme
+    da potroši — tada se izvor preskače (pa se pokuša u sledećoj proveri),
+    umesto da zahtev ponovimo ranije nego što je sajt tražio.
+    """
+    used = _HOST_WAITED.get(host, 0.0)
+    if seconds > MAX_RETRY_AFTER_SECONDS or used + seconds > HOST_WAIT_BUDGET_SECONDS:
+        return False
+    _HOST_WAITED[host] = used + seconds
+    time.sleep(seconds)
+    return True
+
+
+def retry_after_seconds(resp) -> Optional[float]:
+    """Retry-After zaglavlje u sekundama (podržan je samo zapis brojem)."""
+    headers = getattr(resp, "headers", None) or {}
+    value = headers.get("Retry-After") or headers.get("retry-after")
+    try:
+        seconds = float(str(value).strip())
+    except (TypeError, ValueError):
+        return None
+    return seconds if seconds >= 0 else None
 
 
 def _impersonate_session_for(host: str) -> "ImpersonateSession":
@@ -262,53 +334,107 @@ def _impersonate_session_for(host: str) -> "ImpersonateSession":
 def _warm_up(url: str) -> None:
     """Prvi zahtev ka domenu je uvek na početnu stranu, da sesija dobije
     kolačiće zaštite (npr. Cloudflare) pre nego što zatražimo pravu stranicu.
-    Bez ovoga čak i ispravan TLS potpis ume da dobije HTTP 403.
+
+    Zagrevanje se radi jednom po domenu i njegov ishod se broji kao i svaki
+    drugi zahtev: status ulazi u dijagnostiku, a odbijen pristup i u brojač
+    odbijanja — bez dodatnog zahteva i bez tihog "uspeha".
     """
     host = _host_of(url)
     if host in _WARMED_UP_HOSTS:
         return
     _WARMED_UP_HOSTS.add(host)  # pokušaj samo jednom, i kad ne uspe
     homepage = f"https://{host}/"
+    headers = {**REQUEST_HEADERS, "Sec-Fetch-Site": "none"}
     try:
-        headers = {**REQUEST_HEADERS, "Sec-Fetch-Site": "none"}
-        if impersonate_get is not None:
-            _impersonate_session_for(host).get(homepage, headers=headers, timeout=20)
+        if ImpersonateSession is not None:
+            resp = _impersonate_session_for(host).get(
+                homepage, headers=headers, timeout=20)
         else:
-            SESSION.get(homepage, headers=headers, timeout=15)
-        time.sleep(REQUEST_DELAY_SECONDS)
+            resp = SESSION.get(homepage, headers=headers, timeout=15)
     except Exception as e:
+        note_problem(homepage, f"{type(e).__name__} (zagrevanje)")
         print(f"  [!] Zagrevanje sesije za {host} nije uspelo: {e}")
+        return
+    status = getattr(resp, "status_code", None)
+    if status != 200:
+        note_problem(homepage, f"HTTP {status} (zagrevanje)")
+        print(f"  [!] Zagrevanje za {host} -> HTTP {status}")
+        if status in DENIAL_STATUSES:
+            note_denial(host, f"HTTP {status}")
+    time.sleep(REQUEST_DELAY_SECONDS)
 
 
 def _get(url: str):
     """Halo Oglasi odbija zahteve sa servera (GitHub Actions) i kad zaglavlja
     izgledaju kao iz pregledača, jer prepoznaje TLS potpis Python biblioteke.
-    curl_cffi oponaša i Chrome-ov TLS handshake, pa prolazi; ako ga nema,
-    vraćamo se na requests (dovoljno je za 4zida i za lokalno pokretanje).
+    curl_cffi oponaša i Chrome-ov TLS handshake, pa ima bolje izglede; ako ga
+    nema, vraćamo se na requests (dovoljno za 4zida i za lokalno pokretanje).
+    Ni jedno ni drugo ne garantuje da će sajt pustiti zahtev.
     Koristimo sesiju (ne jednokratni get) da bi se kolačići sa zagrevanja
     (i sa svakog sledećeg odgovora) preneli na naredne zahteve.
     """
-    _warm_up(url)
     host = _host_of(url)
     headers = {**REQUEST_HEADERS, "Referer": f"https://{host}/"}
-    if impersonate_get is not None:
+    if ImpersonateSession is not None:
         return _impersonate_session_for(host).get(url, headers=headers, timeout=25)
     return SESSION.get(url, headers=headers, timeout=20)
 
 
 def fetch(url: str) -> Optional[BeautifulSoup]:
+    """Učitaj stranicu; None znači da ovaj zahtev nije uspeo.
+
+    Ponavlja se samo ono što ume da prođe iz drugog puta (privremeni kvarovi i
+    ograničenje brzine), i to ograničen broj puta. Odbijen pristup i trajne
+    greške se ne ponavljaju.
+    """
+    host = _host_of(url)
+    if host in GIVEN_UP_HOSTS:
+        note_problem(url, "preskočeno (odustali smo od domena)")
+        return None
+
+    _warm_up(url)
+    if host in GIVEN_UP_HOSTS:  # zagrevanje je već pokazalo da nas ne puštaju
+        note_problem(url, "preskočeno (odustali smo od domena)")
+        return None
+
     for attempt in range(1, FETCH_RETRIES + 1):
         try:
             resp = _get(url)
-            if resp.status_code == 200:
-                return BeautifulSoup(resp.text, "html.parser")
-            note_problem(url, f"HTTP {resp.status_code}")
-            print(f"  [!] {url} -> HTTP {resp.status_code} (pokušaj {attempt})")
         except Exception as e:  # curl_cffi ne deli izuzetke sa requests
             note_problem(url, type(e).__name__)
             print(f"  [!] Greška pri učitavanju {url}: {e} (pokušaj {attempt})")
-        if attempt < FETCH_RETRIES:
-            time.sleep(REQUEST_DELAY_SECONDS * 3)
+            if attempt == FETCH_RETRIES or not _wait_within_budget(
+                    host, RETRY_BACKOFF_SECONDS * attempt):
+                return None
+            continue
+
+        status = resp.status_code
+        if status == 200:
+            return BeautifulSoup(resp.text, "html.parser")
+
+        note_problem(url, f"HTTP {status}")
+        print(f"  [!] {url} -> HTTP {status} (pokušaj {attempt})")
+
+        if status in DENIAL_STATUSES:
+            # Zaštita je odlučila da nas ne pusti; isti zahtev odmah ponovo
+            # daje isti odgovor, pa samo brojimo i idemo dalje.
+            note_denial(host, f"HTTP {status}")
+            return None
+        if status in PERMANENT_STATUSES:
+            return None
+        if status in RATE_LIMIT_STATUSES:
+            wait = retry_after_seconds(resp)
+            if wait is None:
+                wait = RETRY_BACKOFF_SECONDS * attempt
+            if attempt == FETCH_RETRIES or not _wait_within_budget(host, wait):
+                give_up_on_host(
+                    host, f"HTTP {status} — ograničenje brzine, traži {wait:.0f}s")
+                return None
+            continue
+        # Ostalo (5xx i nepoznati statusi) tretiramo kao privremen kvar.
+        if attempt == FETCH_RETRIES or not _wait_within_budget(
+                host, RETRY_BACKOFF_SECONDS * attempt):
+            return None
     return None
 
 
@@ -624,6 +750,15 @@ def format_listing(listing: Listing) -> list[str]:
     return lines
 
 
+def run_status(dead_sources: list[str]) -> str:
+    """'complete' | 'partial' | 'failed' — koliko je provera zaista uspela."""
+    if not dead_sources:
+        return "complete"
+    if len(dead_sources) >= len(SOURCE_NAMES):
+        return "failed"
+    return "partial"
+
+
 def build_email_body(new_listings: list[Listing], favorite_events: list[str],
                      keywords: list[str], dead_sources: list[str]) -> str:
     max_price = f"{MAX_PRICE_EUR:,}".replace(",", ".")
@@ -631,6 +766,7 @@ def build_email_body(new_listings: list[Listing], favorite_events: list[str],
         f"Novi Beograd — do {max_price} €, {MIN_AREA_M2}m2+, "
         f"{MIN_ROOMS:g} sobe ili više, {MIN_FLOOR}-{MAX_FLOOR}. sprat"
         + (", ne poslednji" if EXCLUDE_TOP_FLOOR else ""),
+        f"Status provere: {STATUS_LABELS[run_status(dead_sources)]}",
     ]
     if keywords:
         lines.append(f"Isključene ključne reči: {', '.join(keywords)}")
@@ -639,6 +775,8 @@ def build_email_body(new_listings: list[Listing], favorite_events: list[str],
                   f"UPOZORENJE: {', '.join(dead_sources)} nije vratio nijedan "
                   f"oglas.", "Ovaj mejl je nepotpun.", "",
                   f"HTTP klijent: {http_client_name()}"]
+        for host, reason in sorted(GIVEN_UP_HOSTS.items()):
+            lines.append(f"  {host}: odustali smo u ovom pokretanju ({reason})")
         for host, reasons in sorted(FETCH_PROBLEMS.items()):
             detail = ", ".join(f"{r} x{n}" for r, n in sorted(reasons.items()))
             lines.append(f"  {host}: {detail}")
@@ -698,7 +836,7 @@ def collect_listings() -> tuple[list[Listing], list[str]]:
     zida = [l for cat in ZIDA_CATEGORIES for l in scrape_4zida_category(cat)]
     all_listings.extend(zida)
 
-    for name, found in (("Halo Oglasi", len(halo)), ("4zida.rs", len(zida))):
+    for name, found in zip(SOURCE_NAMES, (len(halo), len(zida))):
         print(f"  {name}: {found} oglasa")
         if found == 0:
             dead_sources.append(name)
@@ -710,9 +848,16 @@ def collect_listings() -> tuple[list[Listing], list[str]]:
 
 
 def check_favorites(catalog: dict, favorites: list[str],
-                    current: dict[str, Listing]) -> list[str]:
-    """Prati favorite: promena cene i nestanak oglasa sa sajta."""
+                    current: dict[str, Listing],
+                    dead_sources: Optional[list[str]] = None) -> list[str]:
+    """Prati favorite: promena cene i nestanak oglasa sa sajta.
+
+    Favoriti sa izvora koji u ovom pokretanju nije odgovorio se preskaču:
+    odbijen pristup nije dokaz da je oglas prodat, pa brojač nestanka ne sme
+    da raste zbog naše greške u dolasku do sajta.
+    """
     events: list[str] = []
+    failed = set(dead_sources or [])
     for url in favorites:
         entry = catalog.get(url)
         if entry is None:
@@ -720,6 +865,10 @@ def check_favorites(catalog: dict, favorites: list[str],
         listing = current.get(url)
 
         if listing is None:
+            if entry.get("source") in failed:
+                print(f"  [favorit] {url}: izvor {entry.get('source')} nije "
+                      f"odgovorio — ne računam kao nestao.")
+                continue
             entry["missing_runs"] = entry.get("missing_runs", 0) + 1
             if entry["missing_runs"] == MISSING_RUNS_BEFORE_ALERT:
                 events.append(
@@ -741,7 +890,15 @@ def check_favorites(catalog: dict, favorites: list[str],
     return events
 
 
-def main():
+def main() -> int:
+    """Vrati izlazni status: 0 = potpuna provera, 1 = nepotpuna ili neuspela.
+
+    Nepotpuna provera ne sme da se prikaže kao uspešna u veb aplikaciji, koja
+    gleda ishod GitHub Actions pokretanja — zato izlazni status nije nula.
+    Katalog se u tom slučaju svejedno sačuva (korak u workflow-u ide uvek), pa
+    se ono što jeste skinuto ne gubi.
+    """
+    reset_fetch_state()
     print(f"HTTP klijent: {http_client_name()}")
     config = load_config()
     keywords = config["exclude_keywords"]
@@ -760,7 +917,7 @@ def main():
     print(f"Prošlo numeričke filtere: {len(filtered)}")
 
     # Favoriti se prate i kad su blokirani/isključeni ključnom rečju.
-    favorite_events = check_favorites(catalog, favorites, filtered)
+    favorite_events = check_favorites(catalog, favorites, filtered, dead_sources)
 
     candidates = {url: l for url, l in filtered.items() if url not in blocked}
     print(f"Posle blokiranih: {len(candidates)}")
@@ -818,9 +975,12 @@ def main():
         catalog[listing.url]["notified"] = True
     save_catalog(catalog)
 
+    status = run_status(dead_sources)
+    print(f"Status provere: {status} — {STATUS_LABELS[status]}")
+
     if not new_listings and not favorite_events and not dead_sources:
         print("Nema novih oglasa ni promena na favoritima — mejl se ne šalje.")
-        return
+        return 0
 
     body = build_email_body(new_listings, favorite_events, keywords, dead_sources)
     bits = []
@@ -829,11 +989,13 @@ def main():
     if favorite_events:
         bits.append(f"{len(favorite_events)} promena na favoritima")
     if dead_sources:
-        bits.append(f"GREŠKA: {', '.join(dead_sources)}")
+        bits.append(f"{'NEUSPELO' if status == 'failed' else 'NEPOTPUNO'}: "
+                    f"{', '.join(dead_sources)}")
     subject = f"🏠 {', '.join(bits) or 'provera'} — Novi Beograd"
     send_email(subject, body)
     print(f"Mejl poslat: {subject}")
+    return 0 if status == "complete" else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
