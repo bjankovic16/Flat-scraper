@@ -6,7 +6,7 @@ Prati oglase za prodaju stanova na **Halo Oglasi** i **4zida.rs** za Novi Beogra
 - cena do 350.000 €
 - kvadratura 70m² ili više
 - 2 sobe ili više
-- od 2. do 6. sprata (prizemlje, visoko prizemlje i suteren ispadaju)
+- od 1. do 5. sprata (prizemlje, visoko prizemlje i suteren ispadaju)
 - ne poslednji sprat u zgradi
 
 Kriterijume menjaš u `scraper.py`, na vrhu fajla (sekcija `CONFIG`).
@@ -50,8 +50,8 @@ Otvori `scraper.py`, na vrhu:
 MAX_PRICE_EUR = 350_000
 MIN_AREA_M2 = 70
 MIN_ROOMS = 2.0
-MIN_FLOOR = 2
-MAX_FLOOR = 6
+MIN_FLOOR = 1
+MAX_FLOOR = 5
 EXCLUDE_TOP_FLOOR = True
 ```
 
@@ -109,3 +109,19 @@ stanova" → **Run workflow**. Provera kreće odmah, ne moraš da čekaš 7h uju
   pa ću prilagoditi kod.
 - Ovo je lični alat za praćenje javno dostupnih oglasa — ne koristi se za
   masovno preuzimanje ili komercijalne svrhe.
+
+## Testovi
+
+Testovi su offline (bez pravih zahteva ka sajtovima i bez slanja mejla):
+
+```bash
+python -m unittest discover -s tests
+```
+
+## Šta znači ishod provere
+
+Skripta na kraju prijavi status: `complete` (svi izvori odgovorili), `partial`
+(deo izvora nije odgovorio) ili `failed` (nijedan). Nepotpuna i neuspela
+provera vraćaju izlazni status različit od nule, pa se u Actions-u (i u veb
+aplikaciji) ne prikazuju kao uspešne. Katalog se svejedno sačuva, tako da se
+rezultati izvora koji jeste odgovorio ne gube.
